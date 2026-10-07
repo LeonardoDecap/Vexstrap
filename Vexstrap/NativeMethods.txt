@@ -1,0 +1,5 @@
+SetForegroundWindow
+FlashWindow
+GetWindowLong
+SetWindowLong
+SHObjectProperties

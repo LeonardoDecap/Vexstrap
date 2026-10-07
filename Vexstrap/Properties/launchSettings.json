@@ -1,0 +1,35 @@
+{
+  "profiles": {
+    "Vexstrap (Launch)": {
+      "commandName": "Project"
+    },
+    "Vexstrap (Quiet Launch)": {
+      "commandName": "Project",
+      "commandLineArgs": "-quiet"
+    },
+    "Vexstrap (Uninstall)": {
+      "commandName": "Project",
+      "commandLineArgs": "-uninstall"
+    },
+    "Vexstrap (Quiet Uninstall)": {
+      "commandName": "Project",
+      "commandLineArgs": "-uninstall -quiet"
+    },
+    "Vexstrap (Menu)": {
+      "commandName": "Project",
+      "commandLineArgs": "-menu"
+    },
+    "Vexstrap (Deeplink)": {
+      "commandName": "Project",
+      "commandLineArgs": "-player \"roblox://experiences/start?placeId=13700835620\""
+    },
+    "Vexstrap (Studio Launch)": {
+      "commandName": "Project",
+      "commandLineArgs": "-studio"
+    },
+    "Vexstrap (Watcher)": {
+      "commandName": "Project",
+      "commandLineArgs": "-watcher"
+    }
+  }
+}
