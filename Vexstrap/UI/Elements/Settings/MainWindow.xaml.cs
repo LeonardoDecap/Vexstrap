@@ -20,7 +20,11 @@ namespace Vexstrap.UI.Elements.Settings
         {
             var viewModel = new MainWindowViewModel();
 
-            viewModel.RequestSaveNoticeEvent += (_, _) => SettingsSavedSnackbar.Show();
+            viewModel.RequestSaveNoticeEvent += (_, _) => 
+            {
+                SettingsSavedSnackbar.Show();
+                Vexstrap.Utility.TaskbarIcon.Apply(this, Vexstrap.Utility.TaskbarIcon.GetCurrentIconPath());
+            };
             viewModel.RequestCloseWindowEvent += (_, _) => Close();
 
             DataContext = viewModel;
@@ -37,6 +41,13 @@ namespace Vexstrap.UI.Elements.Settings
                 ShowAlreadyRunningSnackbar();
 
             LoadState();
+        }
+
+        
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            Vexstrap.Utility.TaskbarIcon.Apply(this, Vexstrap.Utility.TaskbarIcon.GetCurrentIconPath());
         }
 
         public void LoadState()

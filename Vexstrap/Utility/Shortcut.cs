@@ -88,6 +88,7 @@ namespace Vexstrap.Utility
                     {
                         System.IO.File.Delete(shortcut.lnkPath);
                         Create(Paths.Application, shortcut.exeArgs, shortcut.lnkPath);
+                        Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(shortcut.lnkPath);
                     }
                 }
             }
