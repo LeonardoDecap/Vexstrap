@@ -22,11 +22,6 @@ namespace Vexstrap.Extensions
             BootstrapperIcon.IconThemeNordicFrost,
             BootstrapperIcon.IconThemeMidnightAmethyst,
             BootstrapperIcon.IconThemeSolarFlare,
-            BootstrapperIcon.Icon3DCrimsonOrange,
-            BootstrapperIcon.Icon3DCyberpunkCyan,
-            BootstrapperIcon.Icon3DEmeraldMint,
-            BootstrapperIcon.Icon3DStealthObsidian,
-            BootstrapperIcon.Icon3DSunsetBlaze,
             BootstrapperIcon.IconCustom
         };
 
