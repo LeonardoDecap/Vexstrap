@@ -1,10 +1,10 @@
-using System.Text;
+﻿using System.Text;
 
 namespace Vexstrap.Extensions
 {
     static class CustomThemeTemplateEx
     {
-        const string EXAMPLES_URL = "https://github.com/Vexstraplabs/custom-bootstrapper-examples";
+        const string EXAMPLES_URL = "https://github.com/bloxstraplabs/custom-bootstrapper-examples";
 
         public static string GetFileName(this CustomThemeTemplate template)
         {

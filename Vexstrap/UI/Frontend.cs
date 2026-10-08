@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 
 using Vexstrap.UI.Elements.Bootstrapper;
 using Vexstrap.UI.Elements.Dialogs;
@@ -24,7 +24,7 @@ namespace Vexstrap.UI
 
             string info = String.Format(
                 Strings.Dialog_PlayerError_FailedLaunch,
-                $"https://Vexstraplabs.com/wiki/help/roblox-crashes-or-does-not-launch/"
+                $"https://bloxstraplabs.com/wiki/help/roblox-crashes-or-does-not-launch/"
             );
 
             ShowMessageBox(info, MessageBoxImage.Error);

@@ -1,4 +1,4 @@
-namespace Vexstrap.Extensions
+﻿namespace Vexstrap.Extensions
 {
     static class EmojiTypeEx
     {
@@ -25,7 +25,7 @@ namespace Vexstrap.Extensions
             if (emojiType == EmojiType.Default)
                 return "";
 
-            return $"https://github.com/Vexstraplabs/rbxcustom-fontemojis/releases/download/my-phone-is-78-percent/{Filenames[emojiType]}";
+            return $"https://github.com/bloxstraplabs/rbxcustom-fontemojis/releases/download/my-phone-is-78-percent/{Filenames[emojiType]}";
         }
     }
 }

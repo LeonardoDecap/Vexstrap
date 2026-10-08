@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Shell;
@@ -19,10 +19,10 @@ namespace Vexstrap
         public const string ProjectName = "Vexstrap";
 #endif
         public const string ProjectOwner = "Vexstrap";
-        public const string ProjectRepository = "Vexstraplabs/Vexstrap";
-        public const string ProjectDownloadLink = "https://Vexstraplabs.com";
-        public const string ProjectHelpLink = "https://Vexstraplabs.com/wiki/help/";
-        public const string ProjectSupportLink = "https://github.com/Vexstraplabs/Vexstrap/issues/new";
+        public const string ProjectRepository = "LeonardoDecap/Vexstrap";
+        public const string ProjectDownloadLink = "https://bloxstraplabs.com";
+        public const string ProjectHelpLink = "https://bloxstraplabs.com/wiki/help/";
+        public const string ProjectSupportLink = "https://github.com/LeonardoDecap/Vexstrap/issues/new";
 
         public const string RobloxPlayerAppName = "RobloxPlayerBeta";
         public const string RobloxStudioAppName = "RobloxStudioBeta";
@@ -148,10 +148,10 @@ namespace Vexstrap
         {
             // dont let user switch web environment if debug mode is not on
             if (Settings.Prop.WebEnvironment == WebEnvironment.Production || !Settings.Prop.DeveloperMode)
-                return "services.Vexstraplabs.com";
+                return "services.bloxstraplabs.com";
 
             string? sub = Settings.Prop.WebEnvironment.GetDescription();
-            return $"services-{sub}.Vexstraplabs.com";
+            return $"services-{sub}.bloxstraplabs.com";
         }
 
         public static bool CanSendLogs()

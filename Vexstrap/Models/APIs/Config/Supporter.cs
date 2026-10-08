@@ -1,4 +1,4 @@
-namespace Vexstrap.Models.APIs.Config
+﻿namespace Vexstrap.Models.APIs.Config
 {
     public class Supporter
     {
@@ -8,7 +8,7 @@ namespace Vexstrap.Models.APIs.Config
         [JsonPropertyName("name")]
         public string Name { get; set; } = null!;
 
-        public string Image => $"https://raw.githubusercontent.com/Vexstraplabs/config/main/assets/{ImageAsset}";
+        public string Image => $"https://raw.githubusercontent.com/bloxstraplabs/config/main/assets/{ImageAsset}";
     }
 }
 

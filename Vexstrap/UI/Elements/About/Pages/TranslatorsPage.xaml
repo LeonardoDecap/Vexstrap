@@ -1,4 +1,4 @@
-<ui:UiPage x:Class="Vexstrap.UI.Elements.About.Pages.TranslatorsPage"
+﻿<ui:UiPage x:Class="Vexstrap.UI.Elements.About.Pages.TranslatorsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,7 +13,7 @@
       Scrollable="True">
     <StackPanel Margin="0,0,14,14">
         <TextBlock Text="{x:Static resources:Strings.About_Translators_Title}" FontWeight="Medium" FontSize="24" />
-        <controls:MarkdownTextBlock MarkdownText="{Binding Source={x:Static resources:Strings.About_Translators_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://crowdin.com/project/Vexstrap'}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+        <controls:MarkdownTextBlock MarkdownText="{Binding Source={x:Static resources:Strings.About_Translators_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://crowdin.com/project/bloxstrap'}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
 
         <Grid Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
@@ -24,7 +24,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <!--<TextBlock Text="Bokm�l" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <!--<TextBlock Text="Bokmål" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -33,7 +33,7 @@
                 <TextBlock Text="endsouls" />
                 <TextBlock Text="letoek" />-->
 
-                <TextBlock Text="Ce�tina" FontSize="16" FontWeight="Medium">
+                <TextBlock Text="Čeština" FontSize="16" FontWeight="Medium">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -93,7 +93,7 @@
                 <TextBlock Text="vawmpira" />
                 <TextBlock Text="ydbossz" />
 
-                <TextBlock Text="Espa�ol" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Español" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -137,7 +137,7 @@
                 <TextBlock Text="alexisrnld23" />
                 <TextBlock Text="jayces." />
 
-                <TextBlock Text="Fran�ais" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Français" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -239,7 +239,7 @@
                 <TextBlock Text="hulabulaseop" />
                 <TextBlock Text="devyyxn" />
 
-                <TextBlock Text="Lietuviu" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Lietuvių" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -279,7 +279,7 @@
                 <TextBlock Text="Kanibal02" />
                 <TextBlock Text="Maks7594" />
 
-                <TextBlock Text="Portugu�s (Brasil)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Português (Brasil)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -310,7 +310,7 @@
                 <TextBlock Text="SnoowAce" />
                 <TextBlock Text="RayKKitsune" />
 
-                <TextBlock Text="Rom�na" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Română" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -364,7 +364,7 @@
                 <TextBlock Text="hankskyjames777" />
                 <TextBlock Text="ElectricPH" />
 
-                <TextBlock Text="Latvie�u" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Latviešu" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -390,7 +390,7 @@
                 <TextBlock Text="IJustBiel" />
                 <TextBlock Text="Krinkov" />
 
-                <TextBlock Text="Ti?ng Vi?t" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Tiếng Việt" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -417,7 +417,7 @@
                 <TextBlock Text="phandinhtung653" />
                 <TextBlock Text="ntthanng" />
 
-                <TextBlock Text="T�rk�e" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Türkçe" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -446,7 +446,7 @@
                 <TextBlock Text="josephisticated" />
 
                 <!-- Exclude: Flemish, sickpig912 -->
-                <!--<TextBlock Text="??????????" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <!--<TextBlock Text="Українська" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -474,7 +474,7 @@
                 <TextBlock Text="toaste3d" />
                 <TextBlock Text="CrimsonWasntHere" />-->
 
-                <TextBlock Text="?????????" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Български" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -487,7 +487,7 @@
                 <TextBlock Text="boza.kosmata" />
                 <TextBlock Text="silly_cat" />
 
-                <TextBlock Text="???????" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="Русский" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -548,7 +548,7 @@
             </StackPanel>
 
             <StackPanel Grid.Column="3">
-                <!--<TextBlock Text="?????" FontSize="16" FontWeight="Medium">
+                <!--<TextBlock Text="עברית" FontSize="16" FontWeight="Medium">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -558,7 +558,7 @@
                 <TextBlock Text="koerga" />
                 <TextBlock Text="Sezei" />-->
 
-                <TextBlock Text="???????" FontSize="16" FontWeight="Medium">
+                <TextBlock Text="العربية" FontSize="16" FontWeight="Medium">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -583,7 +583,7 @@
                 <TextBlock Text="yuzegh" />
                 <TextBlock Text="infinuts" />
 
-                <!--<TextBlock Text="?????" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <!--<TextBlock Text="বাংলা" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -593,7 +593,7 @@
                 <TextBlock Text="marathedonroblox" />
                 <TextBlock Text="red_hi" />-->
 
-                <TextBlock Text="???????" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="ภาษาไทย" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -609,7 +609,7 @@
                 <TextBlock Text="jarmonxd" />
                 <TextBlock Text="frailfraill" />
 
-                <TextBlock Text="???" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="한국어" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -630,7 +630,7 @@
                 <TextBlock Text="Lish_RBLX" />
                 <TextBlock Text="sk92376053" />
 
-                <TextBlock Text="?? (??)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="中文 (简体)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -649,7 +649,7 @@
                 <TextBlock Text="Mishen" />
                 <TextBlock Text="crimarz" />
 
-                <TextBlock Text="?? (??)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="中文 (香港)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -663,7 +663,7 @@
                 <TextBlock Text="Shhh_op" />
                 <TextBlock Text="Kimina898" />
 
-                <TextBlock Text="?? (??)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="中文 (繁體)" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -682,7 +682,7 @@
                 <TextBlock Text="14TQD" />
                 <TextBlock Text="nathanielrosemain" />
 
-                <TextBlock Text="???" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="日本語" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -694,7 +694,7 @@
                 <TextBlock Text="mtmtyu" />
                 <TextBlock Text="yixhuaa" />
 
-                <TextBlock Text="?????" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
+                <TextBlock Text="فارسی" FontSize="16" FontWeight="Medium" Margin="0,16,0,0">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}" />
                     </TextBlock.Foreground>
@@ -737,4 +737,3 @@
         </Grid>
     </StackPanel>
 </ui:UiPage>
-
