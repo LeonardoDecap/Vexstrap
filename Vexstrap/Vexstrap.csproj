@@ -16,6 +16,7 @@
     
   <ItemGroup>
     <Resource Include="Vexstrap.ico" />
+    <Resource Include="Resources\AppIcon.png" />
     <Resource Include="Resources\Fonts\NotoSansThai-VariableFont_wdth,wght.ttf" />
     <Resource Include="Resources\Fonts\Rubik-VariableFont_wght.ttf" />
     <Resource Include="Resources\BootstrapperStyles\ByfronDialog\ByfronLogoDark.jpg" />
