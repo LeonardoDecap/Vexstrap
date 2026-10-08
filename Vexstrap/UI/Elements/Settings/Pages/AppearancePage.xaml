@@ -178,7 +178,7 @@
                             </Border.Style>
                             <Button Width="118" Padding="8,10,8,10"
                                     Command="{Binding DataContext.SelectIconCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    CommandParameter="{Binding}">
+                                    CommandParameter="{Binding}" IsEnabled="{Binding IsEnabled}">
                                 <StackPanel>
                                     <Image Height="40" Width="40" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" />
                                     <TextBlock Margin="0,6,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />

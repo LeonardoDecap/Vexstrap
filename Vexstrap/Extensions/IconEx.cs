@@ -12,7 +12,7 @@ namespace Vexstrap.Extensions
         public static ImageSource GetImageSource(this Icon icon, bool handleException = true)
         {
             using MemoryStream stream = new();
-            icon.Save(stream);
+            icon.GetSized(256, 256).Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
             if (handleException)

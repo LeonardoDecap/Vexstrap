@@ -6,8 +6,7 @@ namespace Vexstrap.Extensions
     {
         public static IReadOnlyCollection<BootstrapperIcon> Selections => new BootstrapperIcon[]
         {
-            BootstrapperIcon.IconVexstrap,
-            BootstrapperIcon.Icon2022,
+                        BootstrapperIcon.Icon2022,
             BootstrapperIcon.Icon2019,
             BootstrapperIcon.Icon2017,
             BootstrapperIcon.IconLate2015,

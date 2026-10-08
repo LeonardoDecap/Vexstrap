@@ -24,6 +24,13 @@ namespace Vexstrap.Models
         }
 
         private bool _isSelected;
+        private bool _isEnabled = true;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set { _isEnabled = value; OnPropertyChanged(nameof(IsEnabled)); }
+        }
+
         public bool IsSelected
         {
             get => _isSelected;

@@ -54,12 +54,33 @@ namespace Vexstrap.UI.ViewModels.Settings
             OnPropertyChanged(nameof(CustomIconLocation));
         }
 
+        
+        private void UpdateCustomIconState()
+        {
+            foreach (var icon in Icons)
+            {
+                if (icon.IconType == BootstrapperIcon.IconCustom)
+                {
+                    icon.IsEnabled = !string.IsNullOrEmpty(CustomIconLocation) && System.IO.File.Exists(CustomIconLocation);
+                    icon.OnPropertyChanged("ImageSource");
+                    break;
+                }
+            }
+        }
+
         public AppearanceViewModel(Page page)
         {
             _page = page;
 
             foreach (var entry in BootstrapperIconEx.Selections)
-                Icons.Add(new BootstrapperIconEntry { IconType = entry, IsSelected = (entry == App.Settings.Prop.BootstrapperIcon) });
+            {
+                bool isEnabled = true;
+                if (entry == BootstrapperIcon.IconCustom)
+                {
+                    isEnabled = !string.IsNullOrEmpty(App.Settings.Prop.BootstrapperIconCustomLocation) && System.IO.File.Exists(App.Settings.Prop.BootstrapperIconCustomLocation);
+                }
+                Icons.Add(new BootstrapperIconEntry { IconType = entry, IsSelected = (entry == App.Settings.Prop.BootstrapperIcon), IsEnabled = isEnabled });
+            }
 
             PopulateCustomThemes();
         }
@@ -178,6 +199,7 @@ namespace Vexstrap.UI.ViewModels.Settings
                 }
 
                 App.Settings.Prop.BootstrapperIconCustomLocation = value;
+                UpdateCustomIconState();
 
                 OnPropertyChanged(nameof(Icon));
                 OnPropertyChanged(nameof(Icons));
