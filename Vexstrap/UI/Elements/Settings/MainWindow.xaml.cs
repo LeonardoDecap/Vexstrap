@@ -20,15 +20,7 @@ namespace Vexstrap.UI.Elements.Settings
         {
             var viewModel = new MainWindowViewModel();
 
-            viewModel.RequestSaveNoticeEvent += (_, _) => 
-            {
-                SettingsSavedSnackbar.Show();
-                var currentIcon = App.Settings.Prop.BootstrapperIcon.GetIcon().GetImageSource();
-                this.Icon = currentIcon;
-                this.ShowInTaskbar = false;
-                this.ShowInTaskbar = true;
-                this.RootTitleBar.Icon = currentIcon;
-            };
+            viewModel.RequestSaveNoticeEvent += (_, _) => SettingsSavedSnackbar.Show();
             viewModel.RequestCloseWindowEvent += (_, _) => Close();
 
             DataContext = viewModel;
@@ -36,9 +28,7 @@ namespace Vexstrap.UI.Elements.Settings
             
             InitializeComponent();
             
-            var icon = App.Settings.Prop.BootstrapperIcon.GetIcon().GetImageSource();
-            this.Icon = icon;
-            this.RootTitleBar.Icon = icon;
+
 
 
             App.Logger.WriteLine("MainWindow", "Initializing settings window");

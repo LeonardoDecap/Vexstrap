@@ -16,6 +16,8 @@ namespace Vexstrap.UI.ViewModels.Settings
         public EventHandler? RequestSaveNoticeEvent;
         
         public EventHandler? RequestCloseWindowEvent;
+        public System.Windows.Media.ImageSource WindowIcon => App.Settings.Prop.BootstrapperIcon.GetIcon().GetImageSource();
+
 
         public bool TestModeEnabled
         {
@@ -61,6 +63,7 @@ namespace Vexstrap.UI.ViewModels.Settings
 
             Vexstrap.Utility.Shortcut.RefreshShortcuts();
 
+            OnPropertyChanged(nameof(WindowIcon));
             RequestSaveNoticeEvent?.Invoke(this, EventArgs.Empty);
         }
     }
