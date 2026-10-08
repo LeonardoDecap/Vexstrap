@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.SharpZipLib.Zip;
@@ -20,6 +20,12 @@ namespace Vexstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.EnableAnalytics;
             set => App.Settings.Prop.EnableAnalytics = value;
+        }
+
+        public bool FlagInjectorEnabled
+        {
+            get => App.Settings.Prop.EnableFlagInjector;
+            set => App.Settings.Prop.EnableFlagInjector = value;
         }
 
         public WebEnvironment WebEnvironment
