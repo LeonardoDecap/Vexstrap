@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using Vexstrap.UI.Elements.About;
 using CommunityToolkit.Mvvm.Input;
@@ -59,8 +59,11 @@ namespace Vexstrap.UI.ViewModels.Settings
 
             App.PendingSettingTasks.Clear();
 
+            Vexstrap.Utility.Shortcut.RefreshShortcuts();
+
             RequestSaveNoticeEvent?.Invoke(this, EventArgs.Empty);
         }
     }
 }
+
 

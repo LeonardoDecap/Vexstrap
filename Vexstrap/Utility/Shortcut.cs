@@ -16,7 +16,19 @@ namespace Vexstrap.Utility
 
             try
             {
-                ShellLink.Shortcut.CreateShortcut(exePath, exeArgs, exePath, 0).WriteToFile(lnkPath);
+                string iconPath = exePath;
+
+                if (App.Settings.Prop.BootstrapperIcon != Enums.BootstrapperIcon.IconVexstrap)
+                {
+                    string iconsDir = System.IO.Path.Combine(Paths.Base, "Icons");
+                    string customIconPath = System.IO.Path.Combine(iconsDir, "Shortcut.ico");
+                    if (File.Exists(customIconPath))
+                    {
+                        iconPath = customIconPath;
+                    }
+                }
+
+                ShellLink.Shortcut.CreateShortcut(exePath, exeArgs, iconPath, 0).WriteToFile(lnkPath);
 
                 if (_loadStatus != GenericTriState.Successful)
                     _loadStatus = GenericTriState.Successful;
@@ -34,6 +46,56 @@ namespace Vexstrap.Utility
                 Frontend.ShowMessageBox(Strings.Dialog_CannotCreateShortcuts, MessageBoxImage.Warning);
             }
         }
+        public static void RefreshShortcuts()
+        {
+            try
+            {
+                if (App.Settings.Prop.BootstrapperIcon != Enums.BootstrapperIcon.IconVexstrap)
+                {
+                    string iconsDir = System.IO.Path.Combine(Paths.Base, "Icons");
+                    System.IO.Directory.CreateDirectory(iconsDir);
+                    string shortcutIco = System.IO.Path.Combine(iconsDir, "Shortcut.ico");
+                    
+                    if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
+                    {
+                        string customLoc = App.Settings.Prop.BootstrapperIconCustomLocation;
+                        if (!string.IsNullOrEmpty(customLoc) && System.IO.File.Exists(customLoc))
+                        {
+                            System.IO.File.Copy(customLoc, shortcutIco, true);
+                        }
+                    }
+                    else
+                    {
+                        using (var fs = new System.IO.FileStream(shortcutIco, System.IO.FileMode.Create))
+                        {
+                            Vexstrap.Extensions.BootstrapperIconEx.GetIcon(App.Settings.Prop.BootstrapperIcon).Save(fs);
+                        }
+                    }
+                }
+                
+                var shortcuts = new (string lnkPath, string exeArgs)[]
+                {
+                    (System.IO.Path.Combine(Paths.Desktop, $"{App.ProjectName}.lnk"), ""),
+                    (System.IO.Path.Combine(Paths.WindowsStartMenu, $"{App.ProjectName}.lnk"), ""),
+                    (System.IO.Path.Combine(Paths.Desktop, $"{Strings.LaunchMenu_LaunchRoblox}.lnk"), "-player"),
+                    (System.IO.Path.Combine(Paths.Desktop, $"{Strings.LaunchMenu_LaunchRobloxStudio}.lnk"), "-studio"),
+                    (System.IO.Path.Combine(Paths.Desktop, $"{Strings.Menu_Title}.lnk"), "-settings")
+                };
+
+                foreach (var shortcut in shortcuts)
+                {
+                    if (System.IO.File.Exists(shortcut.lnkPath))
+                    {
+                        System.IO.File.Delete(shortcut.lnkPath);
+                        Create(Paths.Application, shortcut.exeArgs, shortcut.lnkPath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("Shortcut::RefreshShortcuts", $"Failed to refresh shortcuts! {ex.Message}");
+            }
+        }
+
     }
 }
-
