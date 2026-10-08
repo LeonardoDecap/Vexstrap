@@ -117,5 +117,20 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\IconThemeCyberpunkCyan.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeEmeraldMint.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeSunsetBlaze.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeObsidianStealth.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeBloodRuby.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeNordicFrost.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeMidnightAmethyst.ico" />
+    <EmbeddedResource Include="Resources\Icons\IconThemeSolarFlare.ico" />
+    <EmbeddedResource Include="Resources\Icons\Icon3DCrimsonOrange.ico" />
+    <EmbeddedResource Include="Resources\Icons\Icon3DCyberpunkCyan.ico" />
+    <EmbeddedResource Include="Resources\Icons\Icon3DEmeraldMint.ico" />
+    <EmbeddedResource Include="Resources\Icons\Icon3DStealthObsidian.ico" />
+    <EmbeddedResource Include="Resources\Icons\Icon3DSunsetBlaze.ico" />
+  </ItemGroup>
 </Project>
 

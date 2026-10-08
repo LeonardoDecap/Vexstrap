@@ -207,6 +207,135 @@ namespace Vexstrap.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeCyberpunkCyan {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeCyberpunkCyan", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeEmeraldMint {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeEmeraldMint", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeSunsetBlaze {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeSunsetBlaze", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeObsidianStealth {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeObsidianStealth", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeBloodRuby {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeBloodRuby", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeNordicFrost {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeNordicFrost", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeMidnightAmethyst {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeMidnightAmethyst", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconThemeSolarFlare {
+            get {
+                object obj = ResourceManager.GetObject("IconThemeSolarFlare", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Icon3DCrimsonOrange {
+            get {
+                object obj = ResourceManager.GetObject("Icon3DCrimsonOrange", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Icon3DCyberpunkCyan {
+            get {
+                object obj = ResourceManager.GetObject("Icon3DCyberpunkCyan", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Icon3DEmeraldMint {
+            get {
+                object obj = ResourceManager.GetObject("Icon3DEmeraldMint", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Icon3DStealthObsidian {
+            get {
+                object obj = ResourceManager.GetObject("Icon3DStealthObsidian", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Icon3DSunsetBlaze {
+            get {
+                object obj = ResourceManager.GetObject("Icon3DSunsetBlaze", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+
     }
 }
-

@@ -157,4 +157,43 @@
   <data name="IconVexstrapClassic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\IconVexstrapClassic.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="IconThemeCyberpunkCyan" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeCyberpunkCyan.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeEmeraldMint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeEmeraldMint.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeSunsetBlaze" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeSunsetBlaze.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeObsidianStealth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeObsidianStealth.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeBloodRuby" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeBloodRuby.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeNordicFrost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeNordicFrost.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeMidnightAmethyst" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeMidnightAmethyst.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconThemeSolarFlare" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\IconThemeSolarFlare.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon3DCrimsonOrange" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon3DCrimsonOrange.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon3DCyberpunkCyan" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon3DCyberpunkCyan.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon3DEmeraldMint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon3DEmeraldMint.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon3DStealthObsidian" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon3DStealthObsidian.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon3DSunsetBlaze" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon3DSunsetBlaze.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

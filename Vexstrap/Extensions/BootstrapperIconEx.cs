@@ -14,7 +14,19 @@ namespace Vexstrap.Extensions
             BootstrapperIcon.IconEarly2015,
             BootstrapperIcon.Icon2011,
             BootstrapperIcon.Icon2008,
-            BootstrapperIcon.IconVexstrapClassic,
+            BootstrapperIcon.IconThemeCyberpunkCyan,
+            BootstrapperIcon.IconThemeEmeraldMint,
+            BootstrapperIcon.IconThemeSunsetBlaze,
+            BootstrapperIcon.IconThemeObsidianStealth,
+            BootstrapperIcon.IconThemeBloodRuby,
+            BootstrapperIcon.IconThemeNordicFrost,
+            BootstrapperIcon.IconThemeMidnightAmethyst,
+            BootstrapperIcon.IconThemeSolarFlare,
+            BootstrapperIcon.Icon3DCrimsonOrange,
+            BootstrapperIcon.Icon3DCyberpunkCyan,
+            BootstrapperIcon.Icon3DEmeraldMint,
+            BootstrapperIcon.Icon3DStealthObsidian,
+            BootstrapperIcon.Icon3DSunsetBlaze,
             BootstrapperIcon.IconCustom
         };
 
@@ -63,6 +75,19 @@ namespace Vexstrap.Extensions
                 BootstrapperIcon.Icon2019 => Properties.Resources.Icon2019,
                 BootstrapperIcon.Icon2022 => Properties.Resources.Icon2022,
                 BootstrapperIcon.IconVexstrapClassic => Properties.Resources.IconVexstrapClassic,
+                BootstrapperIcon.IconThemeCyberpunkCyan => Properties.Resources.IconThemeCyberpunkCyan,
+                BootstrapperIcon.IconThemeEmeraldMint => Properties.Resources.IconThemeEmeraldMint,
+                BootstrapperIcon.IconThemeSunsetBlaze => Properties.Resources.IconThemeSunsetBlaze,
+                BootstrapperIcon.IconThemeObsidianStealth => Properties.Resources.IconThemeObsidianStealth,
+                BootstrapperIcon.IconThemeBloodRuby => Properties.Resources.IconThemeBloodRuby,
+                BootstrapperIcon.IconThemeNordicFrost => Properties.Resources.IconThemeNordicFrost,
+                BootstrapperIcon.IconThemeMidnightAmethyst => Properties.Resources.IconThemeMidnightAmethyst,
+                BootstrapperIcon.IconThemeSolarFlare => Properties.Resources.IconThemeSolarFlare,
+                BootstrapperIcon.Icon3DCrimsonOrange => Properties.Resources.Icon3DCrimsonOrange,
+                BootstrapperIcon.Icon3DCyberpunkCyan => Properties.Resources.Icon3DCyberpunkCyan,
+                BootstrapperIcon.Icon3DEmeraldMint => Properties.Resources.Icon3DEmeraldMint,
+                BootstrapperIcon.Icon3DStealthObsidian => Properties.Resources.Icon3DStealthObsidian,
+                BootstrapperIcon.Icon3DSunsetBlaze => Properties.Resources.Icon3DSunsetBlaze,
                 _ => Properties.Resources.IconVexstrap
             };
         }
