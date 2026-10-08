@@ -154,25 +154,41 @@
             </Grid>
         </ui:CardExpander>
 
-        <controls:OptionControl 
-            x:Name="IconSelector"
-            Header="{x:Static resources:Strings.Menu_Appearance_Icon_Title}" 
-            Description="{x:Static resources:Strings.Menu_Appearance_Icon_Description}">
-            <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Icons, Mode=OneWay}" SelectedValuePath="IconType" SelectedValue="{Binding Icon, Mode=TwoWay}">
-                <ComboBox.ItemTemplate>
+        <StackPanel Margin="0,8,0,4">
+            <TextBlock Margin="0,0,0,4" Text="{x:Static resources:Strings.Menu_Appearance_Icon_Title}" FontSize="14" />
+            <TextBlock Margin="0,0,0,8" Text="{x:Static resources:Strings.Menu_Appearance_Icon_Description}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+            <ItemsControl ItemsSource="{Binding Icons, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="16" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Image Height="16" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" />
-                            <TextBlock Grid.Column="1" Margin="8,0,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" />
-                        </Grid>
+                        <Border Margin="0,0,8,8" CornerRadius="6" BorderThickness="2">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Button Width="118" Padding="8,10,8,10"
+                                    Command="{Binding DataContext.SelectIconCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <Image Height="40" Width="40" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" />
+                                    <TextBlock Margin="0,6,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Border>
                     </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-        </controls:OptionControl>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
 
         <ui:CardExpander Margin="0,8,0,0" IsExpanded="True">
             <ui:CardExpander.Header>

@@ -2,10 +2,32 @@ using System.Windows.Media;
 
 namespace Vexstrap.Models
 {
-    public class BootstrapperIconEntry
+    public class BootstrapperIconEntry : Vexstrap.UI.ViewModels.NotifyPropertyChangedViewModel
     {
-        public BootstrapperIcon IconType { get; set; }
-        public ImageSource ImageSource => IconType.GetIcon().GetImageSource();
+        public Enums.BootstrapperIcon IconType { get; set; }
+        
+        // safe image source access
+        public ImageSource ImageSource 
+        {
+            get 
+            {
+                try 
+                {
+                    return Vexstrap.Extensions.BootstrapperIconEx.GetIcon(IconType).GetImageSource();
+                }
+                catch (System.Exception ex)
+                {
+                    App.Logger.WriteLine("BootstrapperIconEntry", $"Failed to load image source for {IconType}: {ex.Message}");
+                    return Vexstrap.Extensions.BootstrapperIconEx.GetIcon(Enums.BootstrapperIcon.IconVexstrap).GetImageSource();
+                }
+            }
+        }
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set { _isSelected = value; OnPropertyChanged(nameof(IsSelected)); }
+        }
     }
 }
-

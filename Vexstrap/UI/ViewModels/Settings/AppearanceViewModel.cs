@@ -59,7 +59,7 @@ namespace Vexstrap.UI.ViewModels.Settings
             _page = page;
 
             foreach (var entry in BootstrapperIconEx.Selections)
-                Icons.Add(new BootstrapperIconEntry { IconType = entry });
+                Icons.Add(new BootstrapperIconEntry { IconType = entry, IsSelected = (entry == App.Settings.Prop.BootstrapperIcon) });
 
             PopulateCustomThemes();
         }
@@ -77,6 +77,15 @@ namespace Vexstrap.UI.ViewModels.Settings
         }
 
         public ObservableCollection<ThemePresetEntry> ThemePresetEntries { get; } = BuildThemePresetEntries();
+
+        
+        public System.Windows.Input.ICommand SelectIconCommand => new RelayCommand<Models.BootstrapperIconEntry>(SelectIcon);
+
+        private void SelectIcon(Models.BootstrapperIconEntry? entry)
+        {
+            if (entry == null) return;
+            Icon = entry.IconType; // Set the property, it handles the rest
+        }
 
         public ICommand SelectThemePresetCommand => new RelayCommand<string>(SelectThemePreset);
 
@@ -138,7 +147,13 @@ namespace Vexstrap.UI.ViewModels.Settings
         public BootstrapperIcon Icon
         {
             get => App.Settings.Prop.BootstrapperIcon;
-            set => App.Settings.Prop.BootstrapperIcon = value; 
+            set 
+            {
+                App.Settings.Prop.BootstrapperIcon = value;
+                OnPropertyChanged(nameof(Icon));
+                foreach (var i in Icons)
+                    i.IsSelected = (i.IconType == value);
+            }
         }
 
         public string Title
