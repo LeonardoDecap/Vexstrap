@@ -20,6 +20,7 @@ namespace Vexstrap
 #endif
         public const string ProjectOwner = "Vexstrap";
         public const string ProjectRepository = "LeonardoDecap/Vexstrap";
+        private static readonly bool TelemetryEnabled = false; // Vexstrap never reports to upstream
         public const string ProjectDownloadLink = "https://github.com/LeonardoDecap/Vexstrap/releases";
         public const string ProjectHelpLink = "https://bloxstraplabs.com/wiki/help/";
         public const string ProjectSupportLink = "https://github.com/LeonardoDecap/Vexstrap/issues/new";
@@ -189,7 +190,7 @@ namespace Vexstrap
 
         public static async void SendStat(string key, string value)
         {
-            if (!Settings.Prop.EnableAnalytics)
+            if (!TelemetryEnabled || !Settings.Prop.EnableAnalytics)
                 return;
 
             try
@@ -204,7 +205,7 @@ namespace Vexstrap
 
         public static async void SendLog()
         {
-            if (!Settings.Prop.EnableAnalytics || !CanSendLogs())
+            if (!TelemetryEnabled || !Settings.Prop.EnableAnalytics || !CanSendLogs())
                 return;
 
             try
