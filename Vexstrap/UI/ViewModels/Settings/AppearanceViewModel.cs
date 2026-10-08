@@ -165,6 +165,12 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         public ObservableCollection<BootstrapperIconEntry> Icons { get; set; } = new();
 
+        public System.Collections.Generic.IEnumerable<Models.BootstrapperIconEntry> ClassicIcons => Icons.Where(x => x.IconType == BootstrapperIcon.IconThemeMidnightAmethyst);
+        public System.Collections.Generic.IEnumerable<Models.BootstrapperIconEntry> ThemeIcons => Icons.Where(x => x.IconType.ToString().StartsWith("IconTheme") && x.IconType != BootstrapperIcon.IconThemeMidnightAmethyst);
+        public System.Collections.Generic.IEnumerable<Models.BootstrapperIconEntry> LegacyIcons => Icons.Where(x => x.IconType.ToString().StartsWith("Icon20") || x.IconType.ToString().Contains("2015"));
+        public System.Collections.Generic.IEnumerable<Models.BootstrapperIconEntry> CustomIcons => Icons.Where(x => x.IconType == BootstrapperIcon.IconCustom);
+
+
         public BootstrapperIcon Icon
         {
             get => App.Settings.Prop.BootstrapperIcon;

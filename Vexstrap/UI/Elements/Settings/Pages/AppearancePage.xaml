@@ -157,7 +157,104 @@
         <StackPanel Margin="0,8,0,4">
             <TextBlock Margin="0,0,0,4" Text="{x:Static resources:Strings.Menu_Appearance_Icon_Title}" FontSize="14" />
             <TextBlock Margin="0,0,0,8" Text="{x:Static resources:Strings.Menu_Appearance_Icon_Description}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
-            <ItemsControl ItemsSource="{Binding Icons, Mode=OneWay}">
+            <TextBlock Text="Classic" FontSize="14" Margin="0,8,0,4" />
+<ItemsControl ItemsSource="{Binding ClassicIcons, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,8,8" CornerRadius="6" BorderThickness="2">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Button Width="118" Padding="8,10,8,10"
+                                    Command="{Binding DataContext.SelectIconCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}" IsEnabled="{Binding IsEnabled}">
+                                <StackPanel>
+                                    <Image Height="40" Width="40" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" />
+                                    <TextBlock Margin="0,6,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+<TextBlock Text="Themes" FontSize="14" Margin="0,8,0,4" />
+<ItemsControl ItemsSource="{Binding ThemeIcons, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,8,8" CornerRadius="6" BorderThickness="2">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Button Width="118" Padding="8,10,8,10"
+                                    Command="{Binding DataContext.SelectIconCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}" IsEnabled="{Binding IsEnabled}">
+                                <StackPanel>
+                                    <Image Height="40" Width="40" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" />
+                                    <TextBlock Margin="0,6,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+<TextBlock Text="Legacy" FontSize="14" Margin="0,8,0,4" />
+<ItemsControl ItemsSource="{Binding LegacyIcons, Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,8,8" CornerRadius="6" BorderThickness="2">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Button Width="118" Padding="8,10,8,10"
+                                    Command="{Binding DataContext.SelectIconCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}" IsEnabled="{Binding IsEnabled}">
+                                <StackPanel>
+                                    <Image Height="40" Width="40" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" />
+                                    <TextBlock Margin="0,6,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+<TextBlock Text="Custom" FontSize="14" Margin="0,8,0,4" />
+<ItemsControl ItemsSource="{Binding CustomIcons, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

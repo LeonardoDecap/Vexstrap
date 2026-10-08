@@ -25,6 +25,8 @@ namespace Vexstrap.UI.Elements.Settings
                 SettingsSavedSnackbar.Show();
                 var currentIcon = App.Settings.Prop.BootstrapperIcon.GetIcon().GetImageSource();
                 this.Icon = currentIcon;
+                this.ShowInTaskbar = false;
+                this.ShowInTaskbar = true;
                 this.RootTitleBar.Icon = currentIcon;
             };
             viewModel.RequestCloseWindowEvent += (_, _) => Close();

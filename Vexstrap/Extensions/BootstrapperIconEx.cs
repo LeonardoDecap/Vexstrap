@@ -6,21 +6,21 @@ namespace Vexstrap.Extensions
     {
         public static IReadOnlyCollection<BootstrapperIcon> Selections => new BootstrapperIcon[]
         {
-                        BootstrapperIcon.Icon2022,
-            BootstrapperIcon.Icon2019,
-            BootstrapperIcon.Icon2017,
-            BootstrapperIcon.IconLate2015,
-            BootstrapperIcon.IconEarly2015,
-            BootstrapperIcon.Icon2011,
-            BootstrapperIcon.Icon2008,
+            BootstrapperIcon.IconThemeMidnightAmethyst,
             BootstrapperIcon.IconThemeCyberpunkCyan,
             BootstrapperIcon.IconThemeEmeraldMint,
             BootstrapperIcon.IconThemeSunsetBlaze,
             BootstrapperIcon.IconThemeObsidianStealth,
             BootstrapperIcon.IconThemeBloodRuby,
             BootstrapperIcon.IconThemeNordicFrost,
-            BootstrapperIcon.IconThemeMidnightAmethyst,
             BootstrapperIcon.IconThemeSolarFlare,
+            BootstrapperIcon.Icon2022,
+            BootstrapperIcon.Icon2019,
+            BootstrapperIcon.Icon2017,
+            BootstrapperIcon.IconLate2015,
+            BootstrapperIcon.IconEarly2015,
+            BootstrapperIcon.Icon2011,
+            BootstrapperIcon.Icon2008,
             BootstrapperIcon.IconCustom
         };
 
