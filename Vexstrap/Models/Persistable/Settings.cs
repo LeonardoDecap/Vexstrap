@@ -10,6 +10,7 @@ namespace Vexstrap.Models.Persistable
         public string BootstrapperTitle { get; set; } = App.ProjectName;
         public string BootstrapperIconCustomLocation { get; set; } = "";
         public Theme Theme { get; set; } = Theme.Default;
+        public string ThemePreset { get; set; } = "";
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool DeveloperMode { get; set; } = false;
         public bool CheckForUpdates { get; set; } = true;
@@ -31,9 +32,6 @@ namespace Vexstrap.Models.Persistable
         public bool ShowServerDetails { get; set; } = false;
         public ObservableCollection<CustomIntegration> CustomIntegrations { get; set; } = new();
 
-        // Vexstrap injector configuration
-        public bool EnableFlagInjector { get; set; } = false;
-        public Dictionary<string, string> CustomFlags { get; set; } = new();
 
         // mod preset configuration
         public bool UseDisableAppPatch { get; set; } = false;

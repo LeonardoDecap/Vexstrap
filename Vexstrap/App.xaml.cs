@@ -20,7 +20,7 @@ namespace Vexstrap
 #endif
         public const string ProjectOwner = "Vexstrap";
         public const string ProjectRepository = "LeonardoDecap/Vexstrap";
-        public const string ProjectDownloadLink = "https://bloxstraplabs.com";
+        public const string ProjectDownloadLink = "https://github.com/LeonardoDecap/Vexstrap/releases";
         public const string ProjectHelpLink = "https://bloxstraplabs.com/wiki/help/";
         public const string ProjectSupportLink = "https://github.com/LeonardoDecap/Vexstrap/issues/new";
 

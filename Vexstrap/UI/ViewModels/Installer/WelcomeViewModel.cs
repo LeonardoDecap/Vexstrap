@@ -6,7 +6,7 @@
         public string MainText => String.Format(
             Strings.Installer_Welcome_MainText,
             "[github.com/LeonardoDecap/Vexstrap](https://github.com/LeonardoDecap/Vexstrap)",
-            "[bloxstraplabs.com](https://bloxstraplabs.com)"
+            "[github.com/LeonardoDecap/Vexstrap/releases](https://github.com/LeonardoDecap/Vexstrap/releases)"
         );
 
         public string VersionNotice { get; private set; } = "";

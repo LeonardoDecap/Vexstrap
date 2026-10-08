@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -74,6 +74,41 @@ namespace Vexstrap.UI.ViewModels.Settings
                 App.Settings.Prop.Theme = value;
                 ((MainWindow)Window.GetWindow(_page)!).ApplyTheme();
             }
+        }
+
+        public ObservableCollection<ThemePresetEntry> ThemePresetEntries { get; } = BuildThemePresetEntries();
+
+        public ICommand SelectThemePresetCommand => new RelayCommand<string>(SelectThemePreset);
+
+        private static ObservableCollection<ThemePresetEntry> BuildThemePresetEntries()
+        {
+            string current = App.Settings.Prop.ThemePreset ?? "";
+
+            var list = new ObservableCollection<ThemePresetEntry>
+            {
+                new() { Id = "", Name = "System", Swatch = System.Windows.Media.Brushes.Gray, IsSelected = current == "" }
+            };
+
+            foreach (var p in ThemePresets.All)
+                list.Add(new() { Id = p.Id, Name = p.Name, Swatch = new System.Windows.Media.SolidColorBrush(p.Accent), IsSelected = current == p.Id });
+
+            return list;
+        }
+
+        private void SelectThemePreset(string? id)
+        {
+            var preset = ThemePresets.Find(id);
+
+            App.Settings.Prop.ThemePreset = preset?.Id ?? "";
+            App.Settings.Prop.Theme = preset is null
+                ? Vexstrap.Enums.Theme.Default
+                : (preset.Dark ? Vexstrap.Enums.Theme.Dark : Vexstrap.Enums.Theme.Light);
+
+            foreach (var entry in ThemePresetEntries)
+                entry.IsSelected = entry.Id == App.Settings.Prop.ThemePreset;
+
+            OnPropertyChanged(nameof(Theme));
+            ((MainWindow)Window.GetWindow(_page)!).ApplyTheme();
         }
 
         public static List<string> Languages => Locale.GetLanguages();
