@@ -47,6 +47,8 @@ namespace Vexstrap
             foreach (var key in BackgroundKeys)
                 res.Remove(key);
 
+            res["VexWindowBackgroundBrush"] = Brushes.Transparent;
+
             if (preset is null)
                 return;
 
@@ -54,6 +56,7 @@ namespace Vexstrap
             var layer = Shift(bg, 0.04, preset.Dark);
 
             res["ApplicationBackgroundBrush"] = new SolidColorBrush(bg);
+            res["VexWindowBackgroundBrush"] = new SolidColorBrush(bg);
             res["SolidBackgroundFillColorBaseBrush"] = new SolidColorBrush(bg);
             res["SolidBackgroundFillColorSecondaryBrush"] = new SolidColorBrush(layer);
             res["SolidBackgroundFillColorTertiaryBrush"] = new SolidColorBrush(layer);
