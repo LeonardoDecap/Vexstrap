@@ -305,12 +305,6 @@ namespace Vexstrap
                 }
 
                 StartRoblox();
-                // Vexstrap FFlag Injector
-                if (!IsStudioLaunch && App.Settings.Prop.EnableFlagInjector)
-                {
-                    var flags = App.Settings.Prop.CustomFlags ?? new Dictionary<string, string>();
-                    _ = FlagInjector.StartAsync(flags);
-                }
             }
 
             await mutex.ReleaseAsync();

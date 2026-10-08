@@ -22,12 +22,6 @@ namespace Vexstrap.UI.ViewModels.Settings
             set => App.Settings.Prop.EnableAnalytics = value;
         }
 
-        public bool FlagInjectorEnabled
-        {
-            get => App.Settings.Prop.EnableFlagInjector;
-            set => App.Settings.Prop.EnableFlagInjector = value;
-        }
-
         public WebEnvironment WebEnvironment
         {
             get => App.Settings.Prop.WebEnvironment;
