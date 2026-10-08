@@ -24,7 +24,6 @@ namespace Vexstrap.Extensions
                 catch (Exception ex)
                 {
                     App.Logger.WriteException("IconEx::GetImageSource", ex);
-                    Frontend.ShowMessageBox(string.Format(Strings.Dialog_IconLoadFailed, ex.Message));
                     return BootstrapperIcon.IconVexstrap.GetIcon().GetImageSource(false);
                 }
             }
