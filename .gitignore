@@ -350,3 +350,5 @@ MigrationBackup/
 .ionide/
 
 build_log.txt
+
+publish/

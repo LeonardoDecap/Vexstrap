@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace Vexstrap.Models.Persistable
 {
@@ -32,7 +32,7 @@ namespace Vexstrap.Models.Persistable
         public ObservableCollection<CustomIntegration> CustomIntegrations { get; set; } = new();
 
         // Vexstrap injector configuration
-        public bool EnableFlagInjector { get; set; } = true;
+        public bool EnableFlagInjector { get; set; } = false;
         public Dictionary<string, string> CustomFlags { get; set; } = new();
 
         // mod preset configuration
