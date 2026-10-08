@@ -39,7 +39,7 @@ namespace Vexstrap
             "LayerFillColorAltBrush"
         };
 
-        public static void ApplyBackground(ThemePreset? preset)
+        public static void ApplyBackground(ThemePreset? preset, bool darkMode)
         {
             var res = Application.Current.Resources;
 
@@ -52,8 +52,8 @@ namespace Vexstrap
             if (preset is null)
                 return;
 
-            var bg = preset.Background;
-            var layer = Shift(bg, 0.04, preset.Dark);
+            var bg = preset.Dark == darkMode ? preset.Background : Derive(preset.Accent, darkMode);
+            var layer = Shift(bg, 0.04, darkMode);
 
             res["ApplicationBackgroundBrush"] = new SolidColorBrush(bg);
             res["VexWindowBackgroundBrush"] = new SolidColorBrush(bg);
@@ -62,6 +62,14 @@ namespace Vexstrap
             res["SolidBackgroundFillColorTertiaryBrush"] = new SolidColorBrush(layer);
             res["LayerFillColorDefaultBrush"] = new SolidColorBrush(layer);
             res["LayerFillColorAltBrush"] = new SolidColorBrush(layer);
+        }
+
+        // when the window theme doesn't match the preset (e.g. a dark preset on a light window),
+        // derive a matching tint from the accent colour
+        private static Color Derive(Color accent, bool darkMode)
+        {
+            byte f(byte v) => darkMode ? (byte)(18 + (v - 18) * 0.12) : (byte)(255 - (255 - v) * 0.10);
+            return Color.FromRgb(f(accent.R), f(accent.G), f(accent.B));
         }
 
         // dark themes get lighter layers, light themes get slightly darker ones

@@ -28,7 +28,7 @@ namespace Vexstrap.UI.Elements.Base
             else
                 _themeService.SetAccent(preset.Accent);
 
-            ThemePresets.ApplyBackground(preset);
+            ThemePresets.ApplyBackground(preset, App.Settings.Prop.Theme.GetFinal() == Enums.Theme.Dark);
 
             // there doesn't seem to be a way to query the name for merged dictionaries
             var dict = new ResourceDictionary { Source = new Uri($"pack://application:,,,/UI/Style/{Enum.GetName(App.Settings.Prop.Theme.GetFinal())}.xaml") };
