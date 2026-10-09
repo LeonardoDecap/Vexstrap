@@ -32,7 +32,7 @@ namespace Vexstrap.Enums
         IconThemeBloodRuby,
         [EnumName(StaticName = "Nordic Frost")]
         IconThemeNordicFrost,
-        [EnumName(StaticName = "Classic Bloxstrap")]
+        [EnumName(StaticName = "Vexstrap Classic")]
         IconThemeMidnightAmethyst,
         [EnumName(StaticName = "Solar Flare")]
         IconThemeSolarFlare,

@@ -303,7 +303,26 @@ namespace Vexstrap.UI.Elements.Settings.Pages
         }
 
         // refresh list on page load to synchronize with preset page
-        private void Page_Loaded(object sender, RoutedEventArgs e) => ReloadList();
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!App.Settings.Prop.FastFlagWarningAcknowledged)
+            {
+                var dialog = new Dialogs.FastFlagWarningDialog();
+                dialog.ShowDialog();
+                
+                if (dialog.Accepted)
+                {
+                    App.Settings.Prop.FastFlagWarningAcknowledged = true;
+                }
+                else
+                {
+                    if (Window.GetWindow(this) is INavigationWindow window)
+                        window.Navigate(typeof(FastFlagsPage)); // fallback page
+                    return;
+                }
+            }
+            ReloadList();
+        }
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
