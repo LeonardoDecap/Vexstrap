@@ -98,6 +98,23 @@ namespace Vexstrap.Utility
                         Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(shortcut.lnkPath);
                     }
                 }
+
+                // Also update any pinned taskbar shortcuts pointing to Vexstrap
+                try
+                {
+                    string pinnedDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
+                    string pinnedShortcut = System.IO.Path.Combine(pinnedDir, "Vexstrap.lnk");
+                    if (System.IO.File.Exists(pinnedShortcut))
+                    {
+                        System.IO.File.Delete(pinnedShortcut);
+                        Create(Paths.Application, "-menu", pinnedShortcut);
+                        Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(pinnedShortcut);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteException("Shortcut::RefreshShortcuts", ex);
+                }
             }
             catch (Exception ex)
             {
