@@ -71,6 +71,7 @@ namespace Vexstrap.Utility
                             Vexstrap.Extensions.BootstrapperIconEx.GetIcon(App.Settings.Prop.BootstrapperIcon).Save(fs);
                         }
                     }
+                    Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(shortcutIco);
                 }
                 
                 var shortcuts = new (string lnkPath, string exeArgs)[]

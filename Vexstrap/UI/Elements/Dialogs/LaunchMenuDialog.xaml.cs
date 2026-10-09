@@ -24,6 +24,13 @@ namespace Vexstrap.UI.Elements.Dialogs
     {
         public NextAction CloseAction = NextAction.Terminate;
 
+        
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            Vexstrap.Utility.TaskbarIcon.Apply(this, Vexstrap.Utility.TaskbarIcon.GetCurrentIconPath());
+        }
+
         public LaunchMenuDialog()
         {
             var viewModel = new LaunchMenuViewModel();
