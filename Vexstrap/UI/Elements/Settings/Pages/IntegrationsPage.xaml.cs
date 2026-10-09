@@ -15,12 +15,7 @@ namespace Vexstrap.UI.Elements.Settings.Pages
             InitializeComponent();
         }
 
-        public void CustomIntegrationSelection(object sender, SelectionChangedEventArgs e)
-        {
-            IntegrationsViewModel viewModel = (IntegrationsViewModel)DataContext;
-            viewModel.SelectedCustomIntegration = (CustomIntegration)((ListBox)sender).SelectedItem;
-            viewModel.OnPropertyChanged(nameof(viewModel.SelectedCustomIntegration));
-        }
+        
     }
 }
 

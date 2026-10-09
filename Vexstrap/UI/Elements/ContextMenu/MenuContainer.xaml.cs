@@ -41,7 +41,8 @@ namespace Vexstrap.UI.Elements.ContextMenu
                     GameHistoryMenuItem.Visibility = Visibility.Visible;
             }
 
-            if (_watcher.RichPresence is not null)
+            RichPresenceMenuItem.IsChecked = App.Settings.Prop.UseDiscordRichPresence;
+            if (_activityWatcher is not null)
                 RichPresenceMenuItem.Visibility = Visibility.Visible;
 
             VersionTextBlock.Text = $"{App.ProjectName} v{App.Version}";
@@ -102,7 +103,14 @@ namespace Vexstrap.UI.Elements.ContextMenu
 
         private void Window_Closed(object sender, EventArgs e) => App.Logger.WriteLine("MenuContainer::Window_Closed", "Context menu container closed");
 
-        private void RichPresenceMenuItem_Click(object sender, RoutedEventArgs e) => _watcher.RichPresence?.SetVisibility(((MenuItem)sender).IsChecked);
+        private void RichPresenceMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            bool isChecked = ((MenuItem)sender).IsChecked;
+            App.Settings.Prop.UseDiscordRichPresence = isChecked;
+            if (_watcher.RichPresence is null && isChecked && _activityWatcher is not null)
+                _watcher.RichPresence = new(_activityWatcher);
+            _watcher.RichPresence?.SetVisibility(isChecked);
+        }
 
         private void InviteDeeplinkMenuItem_Click(object sender, RoutedEventArgs e) => Clipboard.SetDataObject(_activityWatcher?.Data.GetInviteDeeplink());
 

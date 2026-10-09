@@ -28,7 +28,7 @@ namespace Vexstrap.UI
 
             _notifyIcon = new(new System.ComponentModel.Container())
             {
-                Icon = Properties.Resources.IconVexstrap,
+                Icon = Vexstrap.Extensions.BootstrapperIconEx.GetIcon(App.Settings.Prop.BootstrapperIcon),
                 Text = App.ProjectName,
                 Visible = true
             };

@@ -9,59 +9,6 @@ namespace Vexstrap.UI.ViewModels.Settings
 {
     public class IntegrationsViewModel : NotifyPropertyChangedViewModel
     {
-        public ICommand AddIntegrationCommand => new RelayCommand(AddIntegration);
-
-        public ICommand DeleteIntegrationCommand => new RelayCommand(DeleteIntegration);
-
-        public ICommand BrowseIntegrationLocationCommand => new RelayCommand(BrowseIntegrationLocation);
-
-        private void AddIntegration()
-        {
-            CustomIntegrations.Add(new CustomIntegration()
-            {
-                Name = Strings.Menu_Integrations_Custom_NewIntegration
-            });
-
-            SelectedCustomIntegrationIndex = CustomIntegrations.Count - 1;
-
-            OnPropertyChanged(nameof(SelectedCustomIntegrationIndex));
-            OnPropertyChanged(nameof(IsCustomIntegrationSelected));
-        }
-
-        private void DeleteIntegration()
-        {
-            if (SelectedCustomIntegration is null)
-                return;
-
-            CustomIntegrations.Remove(SelectedCustomIntegration);
-
-            if (CustomIntegrations.Count > 0)
-            {
-                SelectedCustomIntegrationIndex = CustomIntegrations.Count - 1;
-                OnPropertyChanged(nameof(SelectedCustomIntegrationIndex));
-            }
-
-            OnPropertyChanged(nameof(IsCustomIntegrationSelected));
-        }
-
-        private void BrowseIntegrationLocation()
-        {
-            if (SelectedCustomIntegration is null)
-                return;
-
-            var dialog = new OpenFileDialog
-            {
-                Filter = $"{Strings.Menu_AllFiles}|*.*"
-            };
-
-            if (dialog.ShowDialog() != true)
-                return;
-
-            SelectedCustomIntegration.Name = dialog.SafeFileName;
-            SelectedCustomIntegration.Location = dialog.FileName;
-            OnPropertyChanged(nameof(SelectedCustomIntegration));
-        }
-
         public bool ActivityTrackingEnabled
         {
             get => App.Settings.Prop.EnableActivityTracking;
@@ -124,15 +71,5 @@ namespace Vexstrap.UI.ViewModels.Settings
             get => App.Settings.Prop.UseDisableAppPatch;
             set => App.Settings.Prop.UseDisableAppPatch = value;
         }
-        public ObservableCollection<CustomIntegration> CustomIntegrations
-        {
-            get => App.Settings.Prop.CustomIntegrations;
-            set => App.Settings.Prop.CustomIntegrations = value;
-        }
-
-        public CustomIntegration? SelectedCustomIntegration { get; set; }
-        public int SelectedCustomIntegrationIndex { get; set; }
-        public bool IsCustomIntegrationSelected => SelectedCustomIntegration is not null;
     }
 }
-

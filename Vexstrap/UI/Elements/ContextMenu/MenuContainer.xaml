@@ -36,7 +36,7 @@
                 </MenuItem.Header>
             </MenuItem>
             <Separator />
-            <MenuItem x:Name="RichPresenceMenuItem" Header="{x:Static resources:Strings.Common_DiscordRichPresence}" IsCheckable="True" IsChecked="True" Visibility="Collapsed" Click="RichPresenceMenuItem_Click" />
+            <MenuItem x:Name="RichPresenceMenuItem" Header="{x:Static resources:Strings.Common_DiscordRichPresence}" IsCheckable="True" Visibility="Collapsed" Click="RichPresenceMenuItem_Click" />
             <MenuItem x:Name="InviteDeeplinkMenuItem" Visibility="Collapsed" Click="InviteDeeplinkMenuItem_Click">
                 <MenuItem.Header>
                     <Grid>

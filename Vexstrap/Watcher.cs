@@ -14,7 +14,7 @@ namespace Vexstrap
 
         public readonly ActivityWatcher? ActivityWatcher;
 
-        public readonly DiscordRichPresence? RichPresence;
+        public DiscordRichPresence? RichPresence { get; set; }
 
         public Watcher()
         {
