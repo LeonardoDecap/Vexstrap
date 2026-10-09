@@ -264,8 +264,11 @@ namespace Vexstrap.UI.Elements.Settings.Pages
             ClearSearch();
         }
 
-        private bool ValidateFlagEntry(string name, string value)
+        private string GetFlagFormatError(string name, string value)
         {
+            if (string.IsNullOrEmpty(name))
+                return "Name cannot be empty.";
+                
             string lowerValue = value.ToLowerInvariant();
             string errorMessage = "";
 
@@ -273,8 +276,7 @@ namespace Vexstrap.UI.Elements.Settings.Pages
                 errorMessage = Strings.Menu_FastFlagEditor_InvalidPrefix;
             else if (!name.All(x => char.IsLetterOrDigit(x) || x == '_'))
                 errorMessage = Strings.Menu_FastFlagEditor_InvalidCharacter;
-            
-            if (name.EndsWith("_PlaceFilter") || name.EndsWith("_DataCenterFilter"))
+            else if (name.EndsWith("_PlaceFilter") || name.EndsWith("_DataCenterFilter"))
                 errorMessage = !ValidateFilter(name, value) ? Strings.Menu_FastFlagEditor_InvalidPlaceFilter : ""; 
             else if ((name.StartsWith("FInt") || name.StartsWith("DFInt")) && !Int32.TryParse(value, out _))
                 errorMessage = Strings.Menu_FastFlagEditor_InvalidNumberValue;
@@ -282,11 +284,19 @@ namespace Vexstrap.UI.Elements.Settings.Pages
                 errorMessage = Strings.Menu_FastFlagEditor_InvalidBoolValue;
             
             if (!String.IsNullOrEmpty(errorMessage))
+                return String.Format(errorMessage, name);
+                
+            return "";
+        }
+
+        private bool ValidateFlagEntry(string name, string value)
+        {
+            string errorMessage = GetFlagFormatError(name, value);
+            if (!String.IsNullOrEmpty(errorMessage))
             { 
-                Frontend.ShowMessageBox(String.Format(errorMessage, name), MessageBoxImage.Error);
+                Frontend.ShowMessageBox(errorMessage, MessageBoxImage.Error);
                 return false;
             }
-
             return true;
         }
 
@@ -412,6 +422,43 @@ namespace Vexstrap.UI.Elements.Settings.Pages
             string json = JsonSerializer.Serialize(App.FastFlags.Prop, new JsonSerializerOptions { WriteIndented = true });
             Clipboard.SetDataObject(json);
             Frontend.ShowMessageBox(Strings.Menu_FastFlagEditor_JsonCopiedToClipboard, MessageBoxImage.Information);
+        }
+
+        private void CheckSyntaxButton_Click(object sender, RoutedEventArgs e)
+        {
+            var errors = new System.Collections.Generic.List<string>();
+            var seenNames = new System.Collections.Generic.HashSet<string>();
+
+            foreach (var entry in _fastFlagList)
+            {
+                string name = entry.Name ?? "";
+                string val = entry.Value ?? "";
+
+                if (!seenNames.Add(name))
+                {
+                    errors.Add($"Flag '{name}' appears more than once.");
+                }
+
+                string err = GetFlagFormatError(name, val);
+                if (!string.IsNullOrEmpty(err))
+                {
+                    errors.Add(err);
+                }
+            }
+
+            if (errors.Count == 0)
+            {
+                Frontend.ShowMessageBox("Format OK", MessageBoxImage.Information);
+            }
+            else
+            {
+                var sb = new System.Text.StringBuilder();
+                for (int i = 0; i < errors.Count; i++)
+                {
+                    sb.AppendLine($"{i + 1}. {errors[i]}");
+                }
+                Frontend.ShowMessageBox(sb.ToString().TrimEnd(), MessageBoxImage.Warning);
+            }
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
