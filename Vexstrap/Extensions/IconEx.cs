@@ -12,7 +12,9 @@ namespace Vexstrap.Extensions
         public static ImageSource GetImageSource(this Icon icon, bool handleException = true)
         {
             using MemoryStream stream = new();
-            icon.GetSized(256, 256).Save(stream);
+            // Just save the whole multi-size icon directly. WPF's BitmapDecoder 
+            // natively understands .ico frames and will pick the sharpest one automatically!
+            icon.Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
             if (handleException)
