@@ -21,7 +21,10 @@ namespace Vexstrap.Utility
                 if (App.Settings.Prop.BootstrapperIcon != Enums.BootstrapperIcon.IconVexstrap)
                 {
                     string iconsDir = System.IO.Path.Combine(Paths.Base, "Icons");
-                    string customIconPath = System.IO.Path.Combine(iconsDir, "Shortcut.ico");
+                    string iconName = $"Shortcut_{App.Settings.Prop.BootstrapperIcon}.ico";
+                    if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
+                        iconName = "Shortcut_Custom.ico";
+                    string customIconPath = System.IO.Path.Combine(iconsDir, iconName);
                     if (File.Exists(customIconPath))
                     {
                         iconPath = customIconPath;
@@ -54,7 +57,10 @@ namespace Vexstrap.Utility
                 {
                     string iconsDir = System.IO.Path.Combine(Paths.Base, "Icons");
                     System.IO.Directory.CreateDirectory(iconsDir);
-                    string shortcutIco = System.IO.Path.Combine(iconsDir, "Shortcut.ico");
+                    string iconName = $"Shortcut_{App.Settings.Prop.BootstrapperIcon}.ico";
+                    if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
+                        iconName = "Shortcut_Custom.ico";
+                    string shortcutIco = System.IO.Path.Combine(iconsDir, iconName);
                     
                     if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
                     {

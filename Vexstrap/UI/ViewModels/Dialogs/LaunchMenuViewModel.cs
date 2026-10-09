@@ -43,9 +43,9 @@ namespace Vexstrap.UI.ViewModels.Installer
             var release = await App.GetLatestRelease();
             if (release == null)
             {
-                UpdateStatusText = "Error";
-                VersionColor = Brushes.Gray;
-                UpdateStatusColor = Brushes.Gray;
+                UpdateStatusText = "Dev Build";
+                VersionColor = Brushes.Gold;
+                UpdateStatusColor = Brushes.Gold;
                 return;
             }
 

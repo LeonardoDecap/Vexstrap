@@ -35,7 +35,11 @@ namespace Vexstrap.Utility
             if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconVexstrap)
                 return Paths.Application;
                 
-            string shortcutIco = System.IO.Path.Combine(Paths.Base, "Icons", "Shortcut.ico");
+            string iconName = $"Shortcut_{App.Settings.Prop.BootstrapperIcon}.ico";
+            if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
+                iconName = "Shortcut_Custom.ico";
+                
+            string shortcutIco = System.IO.Path.Combine(Paths.Base, "Icons", iconName);
             return System.IO.File.Exists(shortcutIco) ? shortcutIco : Paths.Application;
         }
 
@@ -68,8 +72,12 @@ namespace Vexstrap.Utility
         /// <summary>
         /// Tells Explorer that a .lnk file changed, so pinned and Start Menu icons refresh.
         /// </summary>
+        private const int SHCNE_ASSOCCHANGED = 0x08000000;
+        private const uint SHCNF_IDLIST = 0x0000;
+
         public static void NotifyShortcutChanged(string lnkPath)
         {
+            // Specifically notify for the .lnk file
             IntPtr ptr = Marshal.StringToHGlobalUni(lnkPath);
             try
             {
@@ -79,6 +87,9 @@ namespace Vexstrap.Utility
             {
                 Marshal.FreeHGlobal(ptr);
             }
+            
+            // Nuclear option: broadcast system-wide icon association change to force Explorer redraw
+            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
         }
     }
 }
