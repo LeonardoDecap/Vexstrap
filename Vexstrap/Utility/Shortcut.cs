@@ -107,7 +107,7 @@ namespace Vexstrap.Utility
                     if (System.IO.File.Exists(pinnedShortcut))
                     {
                         System.IO.File.Delete(pinnedShortcut);
-                        Create(Paths.Application, "-menu", pinnedShortcut);
+                        Create(Paths.Application, "", pinnedShortcut);
                         Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(pinnedShortcut);
                     }
                 }
