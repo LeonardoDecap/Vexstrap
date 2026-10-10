@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using Vexstrap.Models.RobloxApi;
 using DiscordRPC;
 
@@ -6,7 +6,7 @@ namespace Vexstrap.Integrations
 {
     public class DiscordRichPresence : IDisposable
     {
-        private readonly DiscordRpcClient _rpcClient = new("1005469189907173486");
+        private readonly DiscordRpcClient _rpcClient = new("1558299311178129460");
         private readonly ActivityWatcher _activityWatcher;
         private readonly Queue<Message> _messageQueue = new();
 
