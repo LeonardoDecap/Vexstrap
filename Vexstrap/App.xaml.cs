@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Shell;
@@ -377,6 +377,14 @@ namespace Vexstrap
                 Settings.Load();
                 State.Load();
                 FastFlags.Load();
+
+                if (Settings.Prop.LastRunVersion != App.Version)
+                {
+                    Logger.WriteLine(LOG_IDENT, $"Version changed from {Settings.Prop.LastRunVersion} to {App.Version}. Refreshing shortcuts.");
+                    Vexstrap.Utility.Shortcut.RefreshShortcuts();
+                    Settings.Prop.LastRunVersion = App.Version;
+                    Settings.Save();
+                }
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {
