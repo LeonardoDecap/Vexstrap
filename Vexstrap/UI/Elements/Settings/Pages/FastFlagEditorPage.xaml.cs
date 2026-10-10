@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Collections.ObjectModel;
@@ -427,6 +427,7 @@ namespace Vexstrap.UI.Elements.Settings.Pages
         private void CheckSyntaxButton_Click(object sender, RoutedEventArgs e)
         {
             var errors = new System.Collections.Generic.List<string>();
+            var notes = new System.Collections.Generic.List<string>();
             var seenNames = new System.Collections.Generic.HashSet<string>();
 
             foreach (var entry in _fastFlagList)
@@ -435,32 +436,38 @@ namespace Vexstrap.UI.Elements.Settings.Pages
                 string val = entry.Value ?? "";
 
                 if (!seenNames.Add(name))
-                {
                     errors.Add($"Flag '{name}' appears more than once.");
-                }
 
                 string err = GetFlagFormatError(name, val);
                 if (!string.IsNullOrEmpty(err))
-                {
                     errors.Add(err);
-                }
+
+                if (!string.IsNullOrEmpty(name) && !Vexstrap.Utility.FastFlagAllowlist.IsStudioFlag(name))
+                    notes.Add(Vexstrap.Utility.FastFlagAllowlist.GetCompatibilityNote(name));
             }
+
+            var sb = new System.Text.StringBuilder();
 
             if (errors.Count == 0)
             {
-                Frontend.ShowMessageBox("Format OK", MessageBoxImage.Information);
+                sb.AppendLine("Format OK");
             }
             else
             {
-                var sb = new System.Text.StringBuilder();
                 for (int i = 0; i < errors.Count; i++)
-                {
                     sb.AppendLine($"{i + 1}. {errors[i]}");
-                }
-                Frontend.ShowMessageBox(sb.ToString().TrimEnd(), MessageBoxImage.Warning);
             }
-        }
 
+            if (notes.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("Compatibility:");
+                foreach (var note in notes)
+                    sb.AppendLine(note);
+            }
+
+            Frontend.ShowMessageBox(sb.ToString().TrimEnd(), errors.Count == 0 ? MessageBoxImage.Information : MessageBoxImage.Warning);
+        }
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is not TextBox textbox)
