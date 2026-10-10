@@ -23,6 +23,21 @@
             <ui:ToggleSwitch IsChecked="{Binding UpdateCheckingEnabled, Mode=TwoWay}" />
         </controls:OptionControl>
 
+        <controls:OptionControl
+            Header="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_Schedule_Title}"
+            Description="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_Schedule_Description}">
+            <ComboBox Width="200" Padding="10,5,10,5"
+                      ItemsSource="{Binding CleanupScheduleOptions, Mode=OneWay}"
+                      DisplayMemberPath="Value"
+                      SelectedValuePath="Key"
+                      SelectedValue="{Binding CleanupScheduleSelection, Mode=TwoWay}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl
+            Header="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_Title}"
+            Description="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_Description}">
+            <ui:Button MinWidth="100" Content="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_CleanNow}" Command="{Binding CleanNowCommand}" />
+        </controls:OptionControl>
         <!-- This does not need i18n as this is locked behind "Developer Mode" -->
         <controls:OptionControl
             Visibility="{Binding Path=WebEnvironmentVisibility, Mode=OneTime}"

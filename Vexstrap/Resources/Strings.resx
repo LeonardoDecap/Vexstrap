@@ -1386,4 +1386,37 @@ Defaulting to {1}.</value>
   <data name="Menu.FastFlagEditor.AllowlistInformation" xml:space="preserve">
     <value>Due to the [Fast Flag allowlist update]({0}), most custom Fast Flags will have no effect on the Roblox player.</value>
   </data>
+  <data name="Menu_Vexstrap_Cleanup_Title" xml:space="preserve">
+    <value>Clean temporary files and caches</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_Description" xml:space="preserve">
+    <value>Removes Vexstrap temp files, the Roblox download cache, and old Roblox versions. Keeps the Roblox version you currently use.</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_Schedule_Title" xml:space="preserve">
+    <value>Automatic cleanup</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_Schedule_Description" xml:space="preserve">
+    <value>Runs on the first launch after the interval passes. The timer starts when you turn this on.</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_ScheduleOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_ScheduleDaily" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_ScheduleWeekly" xml:space="preserve">
+    <value>Every week</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_ScheduleMonthly" xml:space="preserve">
+    <value>Every month</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_CleanNow" xml:space="preserve">
+    <value>Clean now</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_Done" xml:space="preserve">
+    <value>Cleanup finished. Freed {0}.</value>
+  </data>
+  <data name="Menu_Vexstrap_Cleanup_Blocked" xml:space="preserve">
+    <value>Cleanup skipped. Close Roblox and any other Vexstrap windows, then try again.</value>
+  </data>
 </root>

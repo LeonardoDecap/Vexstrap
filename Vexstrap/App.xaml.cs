@@ -399,6 +399,19 @@ namespace Vexstrap
 
                 Locale.Set(Settings.Prop.Locale);
 
+                // scheduled cleanup; never allowed to block startup
+                if (!LaunchSettings.BackgroundUpdaterFlag.Active)
+                {
+                    try
+                    {
+                        Vexstrap.Utility.Cleaner.RunScheduledIfDue();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteException(LOG_IDENT, ex);
+                    }
+                }
+
                 if (!LaunchSettings.BypassUpdateCheck)
                     Installer.HandleUpgrade();
 

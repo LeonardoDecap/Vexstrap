@@ -34,6 +34,49 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         public bool ShouldExportLogs { get; set; } = true;
 
+        private readonly KeyValuePair<CleanupFrequency, string>[] _cleanupOptions =
+        {
+            new KeyValuePair<CleanupFrequency, string>(CleanupFrequency.Off, Strings.Menu_Vexstrap_Cleanup_ScheduleOff),
+            new KeyValuePair<CleanupFrequency, string>(CleanupFrequency.Daily, Strings.Menu_Vexstrap_Cleanup_ScheduleDaily),
+            new KeyValuePair<CleanupFrequency, string>(CleanupFrequency.Weekly, Strings.Menu_Vexstrap_Cleanup_ScheduleWeekly),
+            new KeyValuePair<CleanupFrequency, string>(CleanupFrequency.Monthly, Strings.Menu_Vexstrap_Cleanup_ScheduleMonthly),
+        };
+
+        public KeyValuePair<CleanupFrequency, string>[] CleanupScheduleOptions => _cleanupOptions;
+
+        public CleanupFrequency CleanupScheduleSelection
+        {
+            get => App.Settings.Prop.CleanupSchedule;
+            set
+            {
+                // turning it on starts the clock now, so the first run is one interval from here
+                if (App.Settings.Prop.CleanupSchedule == CleanupFrequency.Off && value != CleanupFrequency.Off)
+                    App.Settings.Prop.LastCleanupUtc = DateTime.UtcNow;
+
+                App.Settings.Prop.CleanupSchedule = value;
+                OnPropertyChanged(nameof(CleanupScheduleSelection));
+            }
+        }
+
+        public ICommand CleanNowCommand => new RelayCommand(CleanNow);
+
+        private void CleanNow()
+        {
+            long? freed = Vexstrap.Utility.Cleaner.Run();
+
+            if (freed is null)
+            {
+                System.Windows.MessageBox.Show(Strings.Menu_Vexstrap_Cleanup_Blocked, App.ProjectName,
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            App.Settings.Prop.LastCleanupUtc = DateTime.UtcNow;
+            App.Settings.Save();
+
+            System.Windows.MessageBox.Show(string.Format(Strings.Menu_Vexstrap_Cleanup_Done, Vexstrap.Utility.Cleaner.FormatBytes(freed.Value)),
+                App.ProjectName, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        }
         public ICommand ExportDataCommand => new RelayCommand(ExportData);
 
         private void ExportData()

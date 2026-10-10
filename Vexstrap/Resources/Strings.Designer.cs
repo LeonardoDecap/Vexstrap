@@ -3610,6 +3610,104 @@ namespace Vexstrap.Resources {
                 return ResourceManager.GetString("Uninstaller.Uninstall", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_Title {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_Description {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_Schedule_Title {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Schedule_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_Schedule_Description {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Schedule_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_ScheduleOff {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_ScheduleOff", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_ScheduleDaily {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_ScheduleDaily", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_ScheduleWeekly {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_ScheduleWeekly", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_ScheduleMonthly {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_ScheduleMonthly", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_CleanNow {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_CleanNow", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_Done {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Done", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_Blocked {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Blocked", resourceCulture);
+            }
+        }
     }
 }
 
