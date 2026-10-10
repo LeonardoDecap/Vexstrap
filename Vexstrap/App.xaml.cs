@@ -378,11 +378,13 @@ namespace Vexstrap
                 State.Load();
                 FastFlags.Load();
 
-                if (Settings.Prop.LastRunVersion != App.Version)
+                string shortcutSignature = $"{App.Version}|{Settings.Prop.BootstrapperIcon}|{Settings.Prop.BootstrapperIconCustomLocation}";
+
+                if (Settings.Prop.LastShortcutSignature != shortcutSignature)
                 {
-                    Logger.WriteLine(LOG_IDENT, $"Version changed from {Settings.Prop.LastRunVersion} to {App.Version}. Refreshing shortcuts.");
+                    Logger.WriteLine(LOG_IDENT, $"Shortcut signature changed to {shortcutSignature}. Refreshing shortcuts.");
                     Vexstrap.Utility.Shortcut.RefreshShortcuts();
-                    Settings.Prop.LastRunVersion = App.Version;
+                    Settings.Prop.LastShortcutSignature = shortcutSignature;
                     Settings.Save();
                 }
 
