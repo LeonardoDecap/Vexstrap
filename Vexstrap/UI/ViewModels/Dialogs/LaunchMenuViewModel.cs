@@ -54,13 +54,13 @@ namespace Vexstrap.UI.ViewModels.Installer
             if (isUpdated)
             {
                 VersionColor = Brushes.LightGreen;
-                UpdateStatusText = "Yes";
+                UpdateStatusText = "Up to date";
                 UpdateStatusColor = Brushes.LightGreen;
             }
             else
             {
                 VersionColor = Brushes.Red;
-                UpdateStatusText = "No";
+                UpdateStatusText = "Available";
                 UpdateStatusColor = Brushes.Red;
             }
         }

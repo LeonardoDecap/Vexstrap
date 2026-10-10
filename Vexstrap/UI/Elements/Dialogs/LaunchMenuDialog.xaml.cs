@@ -44,6 +44,25 @@ namespace Vexstrap.UI.Elements.Dialogs
 
             InitializeComponent();
         }
+
+        private void LaunchRoblox_Click(object sender, RoutedEventArgs e)
+        {
+            CloseAction = NextAction.LaunchRoblox;
+            Close();
+        }
+
+        private void LaunchRobloxStudio_Click(object sender, RoutedEventArgs e)
+        {
+            CloseAction = NextAction.LaunchRobloxStudio;
+            Close();
+        }
+
+        private void LaunchSettings_Click(object sender, RoutedEventArgs e)
+        {
+            CloseAction = NextAction.LaunchSettings;
+            Close();
+        }
+
     }
 }
 
