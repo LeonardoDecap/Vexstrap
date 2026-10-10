@@ -356,3 +356,6 @@ publish/
 *.zip
 
 icons_staging/
+
+# Local publish test output
+publish*/

@@ -781,17 +781,22 @@ namespace Vexstrap
 #else
                 var asset = releaseInfo.Assets![0];
 
-                string downloadLocation = Path.Combine(Paths.TempUpdates, asset.Name);
+                // versioned name, so a leftover file from an older release can never be reused
+                string downloadLocation = Path.Combine(Paths.TempUpdates, $"{Path.GetFileNameWithoutExtension(asset.Name)}-{releaseInfo.TagName}{Path.GetExtension(asset.Name)}");
 
                 Directory.CreateDirectory(Paths.TempUpdates);
 
                 App.Logger.WriteLine(LOG_IDENT, $"Downloading {releaseInfo.TagName}...");
                 
-                if (!File.Exists(downloadLocation))
+                // always fetch fresh, and never execute a partial or stale file
+                File.Delete(downloadLocation);
+
                 {
                     var response = await App.HttpClient.GetAsync(asset.BrowserDownloadUrl);
+                    response.EnsureSuccessStatusCode();
 
-                    await using var fileStream = new FileStream(downloadLocation, FileMode.OpenOrCreate, FileAccess.Write);
+                    // scoped so the file handle is closed before the installer runs
+                    await using var fileStream = new FileStream(downloadLocation, FileMode.Create, FileAccess.Write);
                     await response.Content.CopyToAsync(fileStream);
                 }
 #endif
