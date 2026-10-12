@@ -54,6 +54,13 @@ namespace Vexstrap.UI.ViewModels.Settings
 
                 if (task.Changed)
                 {
+#if DEBUG
+                    if (task is Vexstrap.Models.SettingTasks.ShortcutTask)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"DEBUG: skipped shortcut task '{task}'. Test builds never write live shortcuts.");
+                        continue;
+                    }
+#endif
                     App.Logger.WriteLine(LOG_IDENT, $"Executing pending task '{task}'");
                     task.Execute();
                 }
@@ -61,7 +68,9 @@ namespace Vexstrap.UI.ViewModels.Settings
 
             App.PendingSettingTasks.Clear();
 
+#if !DEBUG
             Vexstrap.Utility.Shortcut.RefreshShortcuts();
+#endif
 
             OnPropertyChanged(nameof(WindowIcon));
             RequestSaveNoticeEvent?.Invoke(this, EventArgs.Empty);

@@ -181,19 +181,4 @@
   <data name="IconThemeSolarFlare" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\IconThemeSolarFlare.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Icon3DCrimsonOrange" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon3DCrimsonOrange.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Icon3DCyberpunkCyan" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon3DCyberpunkCyan.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Icon3DEmeraldMint" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon3DEmeraldMint.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Icon3DStealthObsidian" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon3DStealthObsidian.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Icon3DSunsetBlaze" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon3DSunsetBlaze.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
 </root>

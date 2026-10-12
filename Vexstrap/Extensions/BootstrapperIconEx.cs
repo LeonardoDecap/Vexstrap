@@ -6,13 +6,15 @@ namespace Vexstrap.Extensions
     {
         public static IReadOnlyCollection<BootstrapperIcon> Selections => new BootstrapperIcon[]
         {
-            BootstrapperIcon.IconThemeMidnightAmethyst,
+            BootstrapperIcon.IconVexstrap,
+            BootstrapperIcon.IconVexstrapClassic,
             BootstrapperIcon.IconThemeCyberpunkCyan,
             BootstrapperIcon.IconThemeEmeraldMint,
             BootstrapperIcon.IconThemeSunsetBlaze,
             BootstrapperIcon.IconThemeObsidianStealth,
             BootstrapperIcon.IconThemeBloodRuby,
             BootstrapperIcon.IconThemeNordicFrost,
+            BootstrapperIcon.IconThemeMidnightAmethyst,
             BootstrapperIcon.IconThemeSolarFlare,
             BootstrapperIcon.Icon2022,
             BootstrapperIcon.Icon2019,
@@ -77,11 +79,6 @@ namespace Vexstrap.Extensions
                 BootstrapperIcon.IconThemeNordicFrost => Properties.Resources.IconThemeNordicFrost,
                 BootstrapperIcon.IconThemeMidnightAmethyst => Properties.Resources.IconThemeMidnightAmethyst,
                 BootstrapperIcon.IconThemeSolarFlare => Properties.Resources.IconThemeSolarFlare,
-                BootstrapperIcon.Icon3DCrimsonOrange => Properties.Resources.Icon3DCrimsonOrange,
-                BootstrapperIcon.Icon3DCyberpunkCyan => Properties.Resources.Icon3DCyberpunkCyan,
-                BootstrapperIcon.Icon3DEmeraldMint => Properties.Resources.Icon3DEmeraldMint,
-                BootstrapperIcon.Icon3DStealthObsidian => Properties.Resources.Icon3DStealthObsidian,
-                BootstrapperIcon.Icon3DSunsetBlaze => Properties.Resources.Icon3DSunsetBlaze,
                 _ => Properties.Resources.IconVexstrap
             };
         }

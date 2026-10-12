@@ -7,11 +7,11 @@ namespace Vexstrap.Utility
     {
         private static GenericTriState _loadStatus = GenericTriState.Unknown;
 
-        public static void Create(string exePath, string exeArgs, string lnkPath)
+        public static void Create(string exePath, string exeArgs, string lnkPath, bool overwrite = false)
         {
             const string LOG_IDENT = "Shortcut::Create";
 
-            if (File.Exists(lnkPath))
+            if (!overwrite && File.Exists(lnkPath))
                 return;
 
             try
@@ -49,6 +49,7 @@ namespace Vexstrap.Utility
                 Frontend.ShowMessageBox(Strings.Dialog_CannotCreateShortcuts, MessageBoxImage.Warning);
             }
         }
+
         public static void RefreshShortcuts()
         {
             try
@@ -61,7 +62,7 @@ namespace Vexstrap.Utility
                     if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
                         iconName = "Shortcut_Custom.ico";
                     string shortcutIco = System.IO.Path.Combine(iconsDir, iconName);
-                    
+
                     if (App.Settings.Prop.BootstrapperIcon == Enums.BootstrapperIcon.IconCustom)
                     {
                         string customLoc = App.Settings.Prop.BootstrapperIconCustomLocation;
@@ -79,7 +80,7 @@ namespace Vexstrap.Utility
                     }
                     Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(shortcutIco);
                 }
-                
+
                 var shortcuts = new (string lnkPath, string exeArgs)[]
                 {
                     (System.IO.Path.Combine(Paths.Desktop, $"{App.ProjectName}.lnk"), ""),
@@ -98,23 +99,6 @@ namespace Vexstrap.Utility
                         Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(shortcut.lnkPath);
                     }
                 }
-
-                // Also update any pinned taskbar shortcuts pointing to Vexstrap
-                try
-                {
-                    string pinnedDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
-                    string pinnedShortcut = System.IO.Path.Combine(pinnedDir, "Vexstrap.lnk");
-                    if (System.IO.File.Exists(pinnedShortcut))
-                    {
-                        System.IO.File.Delete(pinnedShortcut);
-                        Create(Paths.Application, "", pinnedShortcut);
-                        Vexstrap.Utility.TaskbarIcon.NotifyShortcutChanged(pinnedShortcut);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.WriteException("Shortcut::RefreshShortcuts", ex);
-                }
             }
             catch (Exception ex)
             {
@@ -122,5 +106,128 @@ namespace Vexstrap.Utility
             }
         }
 
+#if !DEBUG
+        /// <summary>
+        /// In Release builds: if "Vexstrap (TEST).lnk" exists on the Desktop, delete it and
+        /// log its old TargetPath. Called on every startup, outside the signature check.
+        /// </summary>
+        public static void CleanupTestShortcut()
+        {
+            const string LOG_IDENT = "Shortcut::CleanupTestShortcut";
+
+            try
+            {
+                string testLnkPath = System.IO.Path.Combine(Paths.Desktop, $"{App.ProjectName} (TEST).lnk");
+                if (!System.IO.File.Exists(testLnkPath))
+                    return;
+
+                string oldTarget = "(unknown)";
+                try
+                {
+                    var sc = ShellLink.Shortcut.ReadFromFile(testLnkPath);
+                    oldTarget = sc.ExtraData.EnvironmentVariableDataBlock?.TargetUnicode ?? "(unreadable)";
+                }
+                catch { /* best-effort */ }
+
+                System.IO.File.Delete(testLnkPath);
+                App.Logger.WriteLine(LOG_IDENT, $"Deleted TEST shortcut (was pointing to: {oldTarget}).");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("Shortcut::CleanupTestShortcut", $"Failed to clean up TEST shortcut: {ex.Message}");
+                App.Logger.WriteException("Shortcut::CleanupTestShortcut", ex);
+            }
+        }
+#endif
+
+#if DEBUG
+        private static string? GetShortcutTarget(string lnkPath)
+        {
+            try
+            {
+                var sc = ShellLink.Shortcut.ReadFromFile(lnkPath);
+                return sc.ExtraData.EnvironmentVariableDataBlock?.TargetUnicode;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static string? GetShortcutArguments(string lnkPath)
+        {
+            try
+            {
+                var sc = ShellLink.Shortcut.ReadFromFile(lnkPath);
+                return sc.StringData?.CommandLineArguments;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static void ManageTestShortcut()
+        {
+            const string LOG_IDENT = "Shortcut::ManageTestShortcut";
+
+            try
+            {
+                string testLnkPath = Path.Combine(Paths.Desktop, $"{App.ProjectName} (TEST).lnk");
+                string liveLnkName = $"{App.ProjectName}.lnk";
+
+                // Build the cap set: all Vexstrap*.lnk on Desktop EXCEPT shortcuts whose Arguments are exactly "-settings".
+                string[] allMatches = Directory.GetFiles(Paths.Desktop, $"{App.ProjectName}*.lnk");
+                string[] capSet = allMatches
+                    .Where(f => !string.Equals(GetShortcutArguments(f), "-settings", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+
+                // Cap is 2 (live + TEST). If already above 2, a stray is present: warn and do nothing.
+                if (capSet.Length > 2)
+                {
+                    string fileList = string.Join(", ", capSet.Select(Path.GetFileName));
+                    App.Logger.WriteLine(LOG_IDENT, $"Warning: Desktop shortcut cap exceeded ({fileList}). Skipping test shortcut management.");
+                    return;
+                }
+
+                bool testExists = File.Exists(testLnkPath);
+
+                if (testExists)
+                {
+                    // Refresh only when the target has changed.
+                    string? currentTarget = GetShortcutTarget(testLnkPath);
+                    if (string.Equals(currentTarget, Paths.Process, StringComparison.OrdinalIgnoreCase))
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"TEST shortcut already points to {Paths.Process}. No update needed.");
+                        return;
+                    }
+
+                    Create(Paths.Process, "", testLnkPath, overwrite: true);
+                    App.Logger.WriteLine(LOG_IDENT, $"Refreshed TEST shortcut target to: {Paths.Process}");
+                    return;
+                }
+
+                // TEST doesn't exist yet. Cap set must be count <= 1 and contain only "Vexstrap.lnk" (or be empty).
+                bool canCreate = capSet.Length <= 1 && (capSet.Length == 0 || capSet.All(f =>
+                    string.Equals(Path.GetFileName(f), liveLnkName, StringComparison.OrdinalIgnoreCase)));
+
+                if (canCreate)
+                {
+                    Create(Paths.Process, "", testLnkPath);
+                    App.Logger.WriteLine(LOG_IDENT, $"Created TEST shortcut pointing to: {Paths.Process}");
+                }
+                else
+                {
+                    string fileList = string.Join(", ", capSet.Select(Path.GetFileName));
+                    App.Logger.WriteLine(LOG_IDENT, $"Warning: Desktop shortcut cap reached or unexpected Vexstrap shortcuts found ({fileList}). Skipping test shortcut creation.");
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to manage test shortcut: {ex.Message}");
+                App.Logger.WriteException(LOG_IDENT, ex);
+            }
+        }
+#endif
     }
 }

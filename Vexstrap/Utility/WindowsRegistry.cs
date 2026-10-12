@@ -38,6 +38,46 @@ namespace Vexstrap.Utility
         {
             RegisterProtocol("roblox", "Roblox", handler, handlerParam);
             RegisterProtocol("roblox-player", "Roblox", handler, handlerParam);
+
+            foreach (string protocol in new[] { "roblox", "roblox-player" })
+            {
+                using var uriKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{protocol}");
+                if (uriKey.GetValue("URL Protocol") is null)
+                    uriKey.SetValueSafe("URL Protocol", "");
+            }
+        }
+
+        public static void CheckAndRepairPlayer()
+        {
+            const string LOG_IDENT = "WindowsRegistry::CheckAndRepairPlayer";
+
+            if (!File.Exists(Paths.Application))
+                return;
+
+            string expectedCommand = $"\"{Paths.Application}\" -player \"%1\"";
+
+            foreach (string protocol in new[] { "roblox", "roblox-player" })
+            {
+                using var uriKey = Registry.CurrentUser.OpenSubKey($@"Software\Classes\{protocol}");
+                using var commandKey = Registry.CurrentUser.OpenSubKey($@"Software\Classes\{protocol}\shell\open\command");
+
+                string? currentCommand = commandKey?.GetValue("") as string;
+                bool hasUrlProtocol = uriKey?.GetValue("URL Protocol") is not null;
+
+                if (currentCommand != expectedCommand || !hasUrlProtocol)
+                {
+                    string oldValue = currentCommand ?? "(null)";
+                    if (currentCommand is not null && !hasUrlProtocol)
+                        oldValue += " [missing URL Protocol]";
+
+                    RegisterProtocol(protocol, "Roblox", Paths.Application, "-player \"%1\"");
+                    using var repairKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{protocol}");
+                    if (repairKey.GetValue("URL Protocol") is null)
+                        repairKey.SetValueSafe("URL Protocol", "");
+
+                    App.Logger.WriteLine(LOG_IDENT, $"Repaired {protocol} protocol registration. Old: '{oldValue}', New: '{expectedCommand}'");
+                }
+            }
         }
 
         /// <summary>

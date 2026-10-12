@@ -7,6 +7,10 @@ namespace Vexstrap.Models.Persistable
         public bool ForceReinstall { get; set; } = false;
 
         public WindowState SettingsWindow { get; set; } = new();
+
+        public DateTime LastCleanupUtc { get; set; } = default;
+
+        public bool CleanupTimestampMigrated { get; set; } = false;
     }
 }
 

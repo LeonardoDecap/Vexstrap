@@ -3708,6 +3708,110 @@ namespace Vexstrap.Resources {
                 return ResourceManager.GetString("Menu_Vexstrap_Cleanup_Blocked", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_Cleanup_PartialFailure {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_Cleanup_PartialFailure", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_AlreadyLatest {
+            get {
+                return ResourceManager.GetString("Install_AlreadyLatest", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_RobloxRunning {
+            get {
+                return ResourceManager.GetString("Install_RobloxRunning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_AnotherInstanceRunning {
+            get {
+                return ResourceManager.GetString("Install_AnotherInstanceRunning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_CheckFailed {
+            get {
+                return ResourceManager.GetString("Install_CheckFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_FetchFailed {
+            get {
+                return ResourceManager.GetString("Install_FetchFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_NoAssets {
+            get {
+                return ResourceManager.GetString("Install_NoAssets", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Install_DownloadFailed {
+            get {
+                return ResourceManager.GetString("Install_DownloadFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLatest {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLatest", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_UpdateNow {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_UpdateNow", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string LaunchMenu_UpdateStatus_CheckFailed {
+            get {
+                return ResourceManager.GetString("LaunchMenu_UpdateStatus_CheckFailed", resourceCulture);
+            }
+        }
     }
 }
+
 

@@ -20,7 +20,10 @@
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_Behaviour_AutoUpdate_Title}"
             Description="{x:Static resources:Strings.Menu_Behaviour_AutoUpdate_Description}">
-            <ui:ToggleSwitch IsChecked="{Binding UpdateCheckingEnabled, Mode=TwoWay}" />
+            <StackPanel Orientation="Horizontal">
+                <ui:Button Margin="0,0,12,0" Content="{x:Static resources:Strings.Menu_Vexstrap_InstallLatest}" Command="{Binding InstallLatestVersionCommand}" />
+                <ui:ToggleSwitch IsChecked="{Binding UpdateCheckingEnabled, Mode=TwoWay}" />
+            </StackPanel>
         </controls:OptionControl>
 
         <controls:OptionControl

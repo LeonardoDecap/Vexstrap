@@ -49,21 +49,55 @@ namespace Vexstrap.UI.ViewModels.Installer
                 return;
             }
 
-            bool isUpdated = Vexstrap.Utilities.CompareVersions(App.Version, release.TagName) != Vexstrap.Enums.VersionComparison.LessThan;
+            bool isUpdated;
+            try
+            {
+                isUpdated = Vexstrap.Utilities.CompareVersions(App.Version, release.TagName) != Vexstrap.Enums.VersionComparison.LessThan;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("LaunchMenuViewModel::CheckForUpdatesAsync", $"Failed to compare version '{App.Version}' with '{release.TagName}'");
+                App.Logger.WriteException("LaunchMenuViewModel::CheckForUpdatesAsync", ex);
+                UpdateStatusText = Strings.LaunchMenu_UpdateStatus_CheckFailed;
+                VersionColor = Brushes.Gold;
+                UpdateStatusColor = Brushes.Gold;
+                IsUpdateAvailable = false;
+                return;
+            }
             
             if (isUpdated)
             {
                 VersionColor = Brushes.LightGreen;
                 UpdateStatusText = "Up to date";
                 UpdateStatusColor = Brushes.LightGreen;
+                IsUpdateAvailable = false;
             }
             else
             {
                 VersionColor = Brushes.Red;
                 UpdateStatusText = "Available";
                 UpdateStatusColor = Brushes.Red;
+                IsUpdateAvailable = true;
             }
         }
+
+        private bool _isUpdateAvailable;
+        public bool IsUpdateAvailable
+        {
+            get => _isUpdateAvailable;
+            set
+            {
+                _isUpdateAvailable = value;
+                OnPropertyChanged(nameof(IsUpdateAvailable));
+                OnPropertyChanged(nameof(UpdateTextVisibility));
+                OnPropertyChanged(nameof(UpdateButtonVisibility));
+            }
+        }
+
+        public Visibility UpdateTextVisibility => IsUpdateAvailable ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility UpdateButtonVisibility => IsUpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
+
+        public ICommand InstallLatestVersionCommand { get; } = new AsyncRelayCommand(Vexstrap.Installer.InstallLatestVersion);
 
         public ICommand LaunchSettingsCommand => new RelayCommand(LaunchSettings);
 

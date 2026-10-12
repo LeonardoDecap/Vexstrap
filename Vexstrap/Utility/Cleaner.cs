@@ -1,40 +1,78 @@
 namespace Vexstrap.Utility
 {
+    public class CleanupResult
+    {
+        public bool IsBlocked { get; set; }
+        public bool VersionCleanupBlocked { get; set; }
+        public int FailedEntries { get; set; }
+        public long BytesFreed { get; set; }
+
+        public bool Succeeded => !IsBlocked && !VersionCleanupBlocked && FailedEntries == 0;
+    }
+
     static class Cleaner
     {
         private const string LOG_IDENT = "Cleaner";
 
-        private static readonly string[] RobloxProcessNames = { "RobloxPlayerBeta", "RobloxStudioBeta" };
+        internal static readonly string[] RobloxProcessNames = { "RobloxPlayerBeta", "RobloxStudioBeta", "RobloxCrashHandler" };
 
         // folders inside Temp\Vexstrap that must never be touched
         private static readonly string[] ProtectedTempFolders = { "Updates", "Logs" };
 
         /// <summary>
         /// Cleans temp files, the Roblox download cache and old Roblox versions.
-        /// Returns bytes freed, or null if cleanup was skipped because Roblox or another Vexstrap window is running.
+        /// Returns a CleanupResult detailing freed bytes, failures, and blocked status.
         /// </summary>
-        public static long? Run()
+        public static CleanupResult Run()
         {
             if (IsBlocked())
             {
                 App.Logger.WriteLine(LOG_IDENT, "Skipped: Roblox or another Vexstrap instance is running.");
-                return null;
+                return new CleanupResult { IsBlocked = true };
             }
 
             long before = MeasureTargets();
 
-            ClearContents(Paths.Temp, ProtectedTempFolders);
-            ClearContents(Paths.Downloads);
+            int tempFailures = ClearContents(Paths.Temp, ProtectedTempFolders);
+            int downloadFailures = ClearContents(Paths.Downloads);
 
             // keeps the current Roblox version, and skips versions that are still running
-            Bootstrapper.CleanupVersionsFolder();
+            var (versionFailures, versionBlocked) = Bootstrapper.CleanupVersionsFolder();
 
             long after = MeasureTargets();
             long freed = Math.Max(0, before - after);
 
-            App.Logger.WriteLine(LOG_IDENT, $"Cleanup freed {FormatBytes(freed)}.");
+            int totalFailures = tempFailures + downloadFailures + versionFailures;
+            App.Logger.WriteLine(LOG_IDENT, $"Cleanup freed {FormatBytes(freed)}. Failures: {totalFailures}, VersionBlocked: {versionBlocked}");
 
-            return freed;
+            return new CleanupResult
+            {
+                IsBlocked = false,
+                VersionCleanupBlocked = versionBlocked,
+                FailedEntries = totalFailures,
+                BytesFreed = freed
+            };
+        }
+
+        /// <summary>
+        /// Migrates LastCleanupUtc from Settings.json to State.json if not yet migrated.
+        /// </summary>
+        public static void EnsureTimestampMigrated()
+        {
+            if (App.State.Prop.CleanupTimestampMigrated)
+                return;
+
+            if (App.Settings.Prop.LastCleanupUtc != default)
+            {
+                App.State.Prop.LastCleanupUtc = App.Settings.Prop.LastCleanupUtc;
+                App.Settings.Prop.LastCleanupUtc = default;
+                App.Settings.Save();
+            }
+
+            App.State.Prop.CleanupTimestampMigrated = true;
+            App.State.Save();
+
+            App.Logger.WriteLine(LOG_IDENT, "Migrated LastCleanupUtc from Settings.json to State.json.");
         }
 
         /// <summary>
@@ -42,40 +80,48 @@ namespace Vexstrap.Utility
         /// </summary>
         public static void RunScheduledIfDue()
         {
+            EnsureTimestampMigrated();
+
             var settings = App.Settings.Prop;
 
             if (settings.CleanupSchedule == CleanupFrequency.Off)
                 return;
 
             // first time on (or never run): start the clock, do not clean yet
-            if (settings.LastCleanupUtc == default)
+            if (App.State.Prop.LastCleanupUtc == default)
             {
-                settings.LastCleanupUtc = DateTime.UtcNow;
-                App.Settings.Save();
+                App.State.Prop.LastCleanupUtc = DateTime.UtcNow;
+                App.State.Save();
                 App.Logger.WriteLine(LOG_IDENT, "Scheduled cleanup armed. First run is one interval from now.");
                 return;
             }
 
             DateTime due = settings.CleanupSchedule switch
             {
-                CleanupFrequency.Daily => settings.LastCleanupUtc.AddDays(1),
-                CleanupFrequency.Weekly => settings.LastCleanupUtc.AddDays(7),
-                _ => settings.LastCleanupUtc.AddMonths(1),
+                CleanupFrequency.Daily => App.State.Prop.LastCleanupUtc.AddDays(1),
+                CleanupFrequency.Weekly => App.State.Prop.LastCleanupUtc.AddDays(7),
+                _ => App.State.Prop.LastCleanupUtc.AddMonths(1),
             };
 
             if (DateTime.UtcNow < due)
                 return;
 
-            long? freed = Run();
+            CleanupResult result = Run();
 
-            if (freed is null)
+            if (result.IsBlocked || result.VersionCleanupBlocked)
             {
-                App.Logger.WriteLine(LOG_IDENT, "Scheduled cleanup is due but was skipped. Will retry on next launch.");
+                App.Logger.WriteLine(LOG_IDENT, "Scheduled cleanup is due but was blocked. Will retry on next launch.");
                 return;
             }
 
-            settings.LastCleanupUtc = DateTime.UtcNow;
-            App.Settings.Save();
+            if (!result.Succeeded)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Scheduled cleanup encountered {result.FailedEntries} failures. Timestamp not advanced.");
+                return;
+            }
+
+            App.State.Prop.LastCleanupUtc = DateTime.UtcNow;
+            App.State.Save();
         }
 
         public static string FormatBytes(long bytes)
@@ -130,12 +176,25 @@ namespace Vexstrap.Utility
             return total;
         }
 
-        private static void ClearContents(string dir, params string[] keep)
+        private static int ClearContents(string dir, params string[] keep)
         {
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
-                return;
+                return 0;
 
-            foreach (string entry in Directory.GetFileSystemEntries(dir))
+            int failedCount = 0;
+
+            string[] entries;
+            try
+            {
+                entries = Directory.GetFileSystemEntries(dir);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Could not enumerate entries in {dir}: {ex.Message}");
+                return 1;
+            }
+
+            foreach (string entry in entries)
             {
                 string name = Path.GetFileName(entry);
 
@@ -151,9 +210,12 @@ namespace Vexstrap.Utility
                 }
                 catch (Exception ex)
                 {
+                    failedCount++;
                     App.Logger.WriteLine(LOG_IDENT, $"Could not remove {entry}: {ex.Message}");
                 }
             }
+
+            return failedCount;
         }
     }
 }

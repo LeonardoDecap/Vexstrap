@@ -287,55 +287,7 @@ namespace Vexstrap.Properties {
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Icon3DCrimsonOrange {
-            get {
-                object obj = ResourceManager.GetObject("Icon3DCrimsonOrange", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
 
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Icon3DCyberpunkCyan {
-            get {
-                object obj = ResourceManager.GetObject("Icon3DCyberpunkCyan", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Icon3DEmeraldMint {
-            get {
-                object obj = ResourceManager.GetObject("Icon3DEmeraldMint", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Icon3DStealthObsidian {
-            get {
-                object obj = ResourceManager.GetObject("Icon3DStealthObsidian", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Icon3DSunsetBlaze {
-            get {
-                object obj = ResourceManager.GetObject("Icon3DSunsetBlaze", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
 
     }
 }

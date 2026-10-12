@@ -16,11 +16,6 @@ namespace Vexstrap.UI.ViewModels.Settings
             set => App.Settings.Prop.CheckForUpdates = value;
         }
 
-        public bool AnalyticsEnabled
-        {
-            get => App.Settings.Prop.EnableAnalytics;
-            set => App.Settings.Prop.EnableAnalytics = value;
-        }
 
         public WebEnvironment WebEnvironment
         {
@@ -49,32 +44,50 @@ namespace Vexstrap.UI.ViewModels.Settings
             get => App.Settings.Prop.CleanupSchedule;
             set
             {
-                // turning it on starts the clock now, so the first run is one interval from here
-                if (App.Settings.Prop.CleanupSchedule == CleanupFrequency.Off && value != CleanupFrequency.Off)
-                    App.Settings.Prop.LastCleanupUtc = DateTime.UtcNow;
+                if (App.Settings.Prop.CleanupSchedule != value)
+                {
+                    // A new schedule starts the clock from now. The first cleanup runs one interval later.
+                    if (value != CleanupFrequency.Off)
+                    {
+                        App.State.Prop.LastCleanupUtc = DateTime.UtcNow;
+                        App.State.Save();
+                    }
 
-                App.Settings.Prop.CleanupSchedule = value;
-                OnPropertyChanged(nameof(CleanupScheduleSelection));
+                    App.Settings.Prop.CleanupSchedule = value;
+                    OnPropertyChanged(nameof(CleanupScheduleSelection));
+                }
             }
         }
+
+        public ICommand InstallLatestVersionCommand { get; } = new AsyncRelayCommand(Vexstrap.Installer.InstallLatestVersion);
 
         public ICommand CleanNowCommand => new RelayCommand(CleanNow);
 
         private void CleanNow()
         {
-            long? freed = Vexstrap.Utility.Cleaner.Run();
+            CleanupResult result = Vexstrap.Utility.Cleaner.Run();
 
-            if (freed is null)
+            if (result.IsBlocked || result.VersionCleanupBlocked)
             {
                 System.Windows.MessageBox.Show(Strings.Menu_Vexstrap_Cleanup_Blocked, App.ProjectName,
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                 return;
             }
 
-            App.Settings.Prop.LastCleanupUtc = DateTime.UtcNow;
-            App.Settings.Save();
+            if (result.FailedEntries > 0)
+            {
+                System.Windows.MessageBox.Show(
+                    string.Format(Strings.Menu_Vexstrap_Cleanup_PartialFailure, Vexstrap.Utility.Cleaner.FormatBytes(result.BytesFreed), result.FailedEntries),
+                    App.ProjectName,
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
+                return;
+            }
 
-            System.Windows.MessageBox.Show(string.Format(Strings.Menu_Vexstrap_Cleanup_Done, Vexstrap.Utility.Cleaner.FormatBytes(freed.Value)),
+            App.State.Prop.LastCleanupUtc = DateTime.UtcNow;
+            App.State.Save();
+
+            System.Windows.MessageBox.Show(string.Format(Strings.Menu_Vexstrap_Cleanup_Done, Vexstrap.Utility.Cleaner.FormatBytes(result.BytesFreed)),
                 App.ProjectName, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
         public ICommand ExportDataCommand => new RelayCommand(ExportData);

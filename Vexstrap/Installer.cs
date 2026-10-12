@@ -27,7 +27,6 @@ namespace Vexstrap
 
         public bool CreateStartMenuShortcuts = true;
 
-        public bool EnableAnalytics = true;
 
         public bool IsImplicitInstall = false;
 
@@ -102,7 +101,6 @@ namespace Vexstrap
             App.State.Load(false);
             App.FastFlags.Load(false);
 
-            App.Settings.Prop.EnableAnalytics = EnableAnalytics;
 
             App.Settings.Save();
 
@@ -245,7 +243,9 @@ namespace Vexstrap
             using var playerKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\roblox-player");
             var playerFolder = playerKey?.GetValue("InstallLocation");
 
-            if (playerKey is null || playerFolder is not string)
+            string? playerPath = playerFolder is string folder ? Path.Combine(folder, "RobloxPlayerBeta.exe") : null;
+
+            if (playerKey is null || playerPath is null || !File.Exists(playerPath))
             {
                 playerStillInstalled = false;
 
@@ -254,8 +254,6 @@ namespace Vexstrap
             }
             else
             {
-                string playerPath = Path.Combine((string)playerFolder, "RobloxPlayerBeta.exe");
-
                 WindowsRegistry.RegisterPlayer(playerPath, "%1");
             }
 
@@ -443,6 +441,10 @@ namespace Vexstrap
                 }
             }
 
+            PruneOldUpdateDownloads();
+
+            WindowsRegistry.CheckAndRepairPlayer();
+
             using (var uninstallKey = Registry.CurrentUser.CreateSubKey(App.UninstallKey))
             {
                 uninstallKey.SetValueSafe("DisplayVersion", App.Version);
@@ -541,8 +543,6 @@ namespace Vexstrap
                     }
 
                     Registry.CurrentUser.DeleteSubKeyTree("Software\\Vexstrap", false);
-
-                    WindowsRegistry.RegisterPlayer();
                 }
 
                 if (Utilities.CompareVersions(existingVer, "2.8.2") == VersionComparison.LessThan)
@@ -643,6 +643,242 @@ namespace Vexstrap
                 );
             }
         }
+
+        private static void PruneOldUpdateDownloads()
+        {
+            const string LOG_IDENT = "Installer::PruneOldUpdateDownloads";
+
+            if (!Directory.Exists(Paths.TempUpdates))
+                return;
+
+            try
+            {
+                var files = Directory.GetFiles(Paths.TempUpdates, $"{App.ProjectName}-v*.exe");
+                if (files.Length <= 1)
+                    return;
+
+                // Determine the newest file by parsed version (falling back to last write time)
+                string? newestFile = null;
+                Version? highestVersion = null;
+                DateTime newestTime = DateTime.MinValue;
+
+                foreach (string file in files)
+                {
+                    Version? parsed = null;
+                    try
+                    {
+                        string name = Path.GetFileNameWithoutExtension(file);
+                        int vIdx = name.LastIndexOf("-v", StringComparison.OrdinalIgnoreCase);
+                        if (vIdx != -1)
+                        {
+                            string verStr = name.Substring(vIdx + 2);
+                            Version.TryParse(verStr, out parsed);
+                        }
+
+                        if (parsed is null)
+                        {
+                            var vi = FileVersionInfo.GetVersionInfo(file);
+                            if (vi.FileVersion is not null)
+                                Version.TryParse(vi.FileVersion, out parsed);
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+                    DateTime writeTime = File.GetLastWriteTimeUtc(file);
+
+                    if (newestFile is null)
+                    {
+                        newestFile = file;
+                        highestVersion = parsed;
+                        newestTime = writeTime;
+                    }
+                    else if (parsed is not null && highestVersion is not null)
+                    {
+                        if (parsed > highestVersion || (parsed == highestVersion && writeTime > newestTime))
+                        {
+                            newestFile = file;
+                            highestVersion = parsed;
+                            newestTime = writeTime;
+                        }
+                    }
+                    else if (parsed is not null && highestVersion is null)
+                    {
+                        newestFile = file;
+                        highestVersion = parsed;
+                        newestTime = writeTime;
+                    }
+                    else if (parsed is null && highestVersion is null && writeTime > newestTime)
+                    {
+                        newestFile = file;
+                        newestTime = writeTime;
+                    }
+                }
+
+                foreach (string file in files)
+                {
+                    if (string.Equals(file, newestFile, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    if (string.Equals(file, Paths.Process, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    try
+                    {
+                        File.Delete(file);
+                        App.Logger.WriteLine(LOG_IDENT, $"Pruned old updater download: {file}");
+                    }
+                    catch (IOException ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Could not delete locked updater download '{file}', skipping: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Failed to delete updater download '{file}': {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to enumerate update downloads for pruning");
+                App.Logger.WriteException(LOG_IDENT, ex);
+            }
+        }
+        public static async Task InstallLatestVersion()
+        {
+            const string LOG_IDENT = "Installer::InstallLatestVersion";
+
+            // a. Already on latest? Say "Already on the latest version" and stop.
+            Models.APIs.GitHub.GithubRelease? releaseInfo;
+            try
+            {
+                releaseInfo = await App.GetLatestRelease();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to check for latest release");
+                App.Logger.WriteException(LOG_IDENT, ex);
+                Frontend.ShowMessageBox(string.Format(Strings.Install_CheckFailed, ex.Message), MessageBoxImage.Error);
+                return;
+            }
+
+            if (releaseInfo is null)
+            {
+                Frontend.ShowMessageBox(Strings.Install_FetchFailed, MessageBoxImage.Warning);
+                return;
+            }
+
+            VersionComparison versionComparison;
+            try
+            {
+                versionComparison = Utilities.CompareVersions(App.Version, releaseInfo.TagName);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to compare app version '{App.Version}' with release tag '{releaseInfo.TagName}'");
+                App.Logger.WriteException(LOG_IDENT, ex);
+                Frontend.ShowMessageBox(string.Format(Strings.Install_CheckFailed, ex.Message), MessageBoxImage.Error);
+                return;
+            }
+
+            if (versionComparison != VersionComparison.LessThan)
+            {
+                Frontend.ShowMessageBox(Strings.Install_AlreadyLatest, MessageBoxImage.Information);
+                return;
+            }
+
+            // b. Roblox running (use Cleaner.RobloxProcessNames)? Dialog: "Roblox is currently running. Please close Roblox before installing the update." Stop.
+            bool robloxRunning = false;
+            foreach (string processName in Utility.Cleaner.RobloxProcessNames)
+            {
+                var procs = Process.GetProcessesByName(processName);
+                if (procs.Length > 0)
+                {
+                    foreach (var p in procs)
+                        p.Dispose();
+                    robloxRunning = true;
+                    break;
+                }
+            }
+
+            if (robloxRunning)
+            {
+                Frontend.ShowMessageBox(
+                    Strings.Install_RobloxRunning,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            // c. Another Vexstrap running? Compare process IDs and skip your own (p.Id != Environment.ProcessId). Dialog and stop.
+            var vexstrapProcesses = Process.GetProcessesByName(App.ProjectName);
+            bool anotherRunning = false;
+            foreach (var proc in vexstrapProcesses)
+            {
+                if (proc.Id != Environment.ProcessId)
+                {
+                    anotherRunning = true;
+                }
+                proc.Dispose();
+            }
+
+            if (anotherRunning)
+            {
+                Frontend.ShowMessageBox(
+                    Strings.Install_AnotherInstanceRunning,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            // d. Download to Paths.TempUpdates, then use the existing upgrade path (-upgrade into Installer.HandleUpgrade). No second installer.
+            string downloadLocation;
+            try
+            {
+                var asset = releaseInfo.Assets?.FirstOrDefault(a => string.Equals(a.Name, $"{App.ProjectName}.exe", StringComparison.OrdinalIgnoreCase) || string.Equals(a.Name, "Vexstrap.exe", StringComparison.OrdinalIgnoreCase));
+                if (asset is null)
+                {
+                    Frontend.ShowMessageBox(Strings.Install_NoAssets, MessageBoxImage.Error);
+                    return;
+                }
+
+                downloadLocation = Path.Combine(Paths.TempUpdates, $"{Path.GetFileNameWithoutExtension(asset.Name)}-{releaseInfo.TagName}{Path.GetExtension(asset.Name)}");
+
+                Directory.CreateDirectory(Paths.TempUpdates);
+
+                if (File.Exists(downloadLocation))
+                    File.Delete(downloadLocation);
+
+                App.Logger.WriteLine(LOG_IDENT, $"Downloading {releaseInfo.TagName} to {downloadLocation}...");
+
+                var response = await App.HttpClient.GetAsync(asset.BrowserDownloadUrl);
+                response.EnsureSuccessStatusCode();
+
+                await using (var fileStream = new FileStream(downloadLocation, FileMode.Create, FileAccess.Write))
+                {
+                    await response.Content.CopyToAsync(fileStream);
+                }
+
+                ProcessStartInfo startInfo = new()
+                {
+                    FileName = downloadLocation,
+                };
+                startInfo.ArgumentList.Add("-upgrade");
+                startInfo.ArgumentList.Add("-quiet");
+
+                App.Logger.WriteLine(LOG_IDENT, $"Launching downloaded update with -upgrade -quiet: {downloadLocation}");
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to download or launch update");
+                App.Logger.WriteException(LOG_IDENT, ex);
+                Frontend.ShowMessageBox(string.Format(Strings.Install_DownloadFailed, ex.Message), MessageBoxImage.Error);
+                return;
+            }
+
+            // e. Call App.Terminate() on the calling UI so the exe unlocks.
+            App.Terminate();
+        }
     }
 }
-

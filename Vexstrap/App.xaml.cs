@@ -380,6 +380,9 @@ namespace Vexstrap
 
                 string shortcutSignature = $"{App.Version}|{Settings.Prop.BootstrapperIcon}|{Settings.Prop.BootstrapperIconCustomLocation}";
 
+#if DEBUG
+                Vexstrap.Utility.Shortcut.ManageTestShortcut();
+#else
                 if (Settings.Prop.LastShortcutSignature != shortcutSignature)
                 {
                     Logger.WriteLine(LOG_IDENT, $"Shortcut signature changed to {shortcutSignature}. Refreshing shortcuts.");
@@ -387,11 +390,18 @@ namespace Vexstrap
                     Settings.Prop.LastShortcutSignature = shortcutSignature;
                     Settings.Save();
                 }
+                Vexstrap.Utility.Shortcut.CleanupTestShortcut();
+#endif
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {
                     Settings.Prop.Locale = "nil";
                     Settings.Save();
+                }
+
+                if (App.IsPlayerInstalled)
+                {
+                    WindowsRegistry.CheckAndRepairPlayer();
                 }
 
                 Logger.WriteLine(LOG_IDENT, $"Developer mode: {Settings.Prop.DeveloperMode}");

@@ -844,56 +844,143 @@ namespace Vexstrap
         #endregion
 
         #region Roblox Install
-        private static bool TryDeleteRobloxInDirectory(string dir)
+        private static bool IsVersionDirectoryInUse(string dir)
         {
-            // check if the roblox executable is present in the directory
-            string clientPath = Path.Combine(dir, "RobloxPlayerBeta.exe");
-            if (!File.Exists(clientPath))
-            {
-                clientPath = Path.Combine(dir, "RobloxStudioBeta.exe");
-                if (!File.Exists(clientPath))
-                    return true; // ok???
-            }
+            const string LOG_IDENT = "Bootstrapper::IsVersionDirectoryInUse";
 
+            string normalizedDir;
             try
             {
-                File.Delete(clientPath);
+                normalizedDir = Path.GetFullPath(dir).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to normalize directory path '{dir}', treating as in use: {ex.Message}");
                 return true;
             }
-            catch (Exception)
+
+            // 1. Check running processes first and compare executable paths
+            foreach (string procName in Cleaner.RobloxProcessNames)
             {
-                return false;
+                Process[] processes;
+                try
+                {
+                    processes = Process.GetProcessesByName(procName);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to enumerate processes for '{procName}', treating as in use: {ex.Message}");
+                    return true;
+                }
+
+                foreach (Process proc in processes)
+                {
+                    try
+                    {
+                        string? exePath = null;
+                        try
+                        {
+                            exePath = proc.MainModule?.FileName;
+                        }
+                        catch (Exception ex)
+                        {
+                            // If a path cannot be read (Win32Exception, access denied, etc.), treat as in use
+                            App.Logger.WriteLine(LOG_IDENT, $"Cannot read executable path for process {proc.ProcessName} (PID {proc.Id}), treating '{dir}' as in use: {ex.Message}");
+                            return true;
+                        }
+
+                        if (string.IsNullOrEmpty(exePath))
+                        {
+                            App.Logger.WriteLine(LOG_IDENT, $"Executable path is null/empty for process {proc.ProcessName} (PID {proc.Id}), treating '{dir}' as in use.");
+                            return true;
+                        }
+
+                        string normalizedExe = Path.GetFullPath(exePath);
+                        if (normalizedExe.StartsWith(normalizedDir, StringComparison.OrdinalIgnoreCase))
+                        {
+                            App.Logger.WriteLine(LOG_IDENT, $"Version directory '{dir}' is currently in use by process {proc.ProcessName} (PID {proc.Id}, path '{normalizedExe}').");
+                            return true;
+                        }
+                    }
+                    finally
+                    {
+                        proc.Dispose();
+                    }
+                }
             }
+
+            // 2. Secondary backup: nondestructive file lock check on executables in the directory
+            foreach (string exeName in new[] { "RobloxPlayerBeta.exe", "RobloxStudioBeta.exe", "RobloxCrashHandler.exe" })
+            {
+                string filePath = Path.Combine(dir, exeName);
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        using var stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                    }
+                    catch (IOException ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Executable '{filePath}' is locked by another process: {ex.Message}");
+                        return true;
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Access denied when opening '{filePath}', treating as in use: {ex.Message}");
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Unexpected error testing lock on '{filePath}', treating as in use: {ex.Message}");
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
-        public static void CleanupVersionsFolder()
+        public static (int FailedCount, bool IsBlocked) CleanupVersionsFolder()
         {
             const string LOG_IDENT = "Bootstrapper::CleanupVersionsFolder";
 
             if (App.LaunchSettings.BackgroundUpdaterFlag.Active)
             {
                 App.Logger.WriteLine(LOG_IDENT, "Background updater tried to cleanup, stopping!");
-                return;
+                return (FailedCount: 0, IsBlocked: true);
             }
 
             if (!Directory.Exists(Paths.Versions))
             {
                 App.Logger.WriteLine(LOG_IDENT, "Versions directory does not exist, skipping cleanup.");
-                return;
+                return (FailedCount: 0, IsBlocked: false);
             }
+
+            string playerGuid = App.PlayerState.Prop.VersionGuid;
+            string studioGuid = App.StudioState.Prop.VersionGuid;
+
+            // If active version GUIDs are uninitialized (neither player nor studio has a valid GUID),
+            // we cannot safely determine which version to preserve. Treat as blocked.
+            if (string.IsNullOrWhiteSpace(playerGuid) && string.IsNullOrWhiteSpace(studioGuid))
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Active version state is uninitialized, skipping version cleanup as blocked.");
+                return (FailedCount: 0, IsBlocked: true);
+            }
+
+            int failedCount = 0;
 
             foreach (string dir in Directory.GetDirectories(Paths.Versions))
             {
                 string dirName = Path.GetFileName(dir);
 
-                if (dirName != App.PlayerState.Prop.VersionGuid && dirName != App.StudioState.Prop.VersionGuid)
-                {
-                    // TODO: this is too expensive
-                    //Filesystem.AssertReadOnlyDirectory(dir);
+                bool isCurrentPlayer = !string.IsNullOrWhiteSpace(playerGuid) && dirName.Equals(playerGuid, StringComparison.OrdinalIgnoreCase);
+                bool isCurrentStudio = !string.IsNullOrWhiteSpace(studioGuid) && dirName.Equals(studioGuid, StringComparison.OrdinalIgnoreCase);
 
+                if (!isCurrentPlayer && !isCurrentStudio)
+                {
                     // check if it's still being used first
                     // we dont want to accidentally delete the files of a running roblox instance
-                    if (!TryDeleteRobloxInDirectory(dir))
+                    if (IsVersionDirectoryInUse(dir))
                         continue;
 
                     try
@@ -902,11 +989,14 @@ namespace Vexstrap
                     }
                     catch (Exception ex)
                     {
+                        failedCount++;
                         App.Logger.WriteLine(LOG_IDENT, $"Failed to delete {dir}");
                         App.Logger.WriteException(LOG_IDENT, ex);
                     }
                 }
             }
+
+            return (FailedCount: failedCount, IsBlocked: false);
         }
 
         private void MigrateCompatibilityFlags()

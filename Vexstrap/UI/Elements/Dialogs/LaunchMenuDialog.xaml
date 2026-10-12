@@ -54,10 +54,11 @@
                 <StackPanel Grid.Row="1" HorizontalAlignment="Center">
                     <ui:Hyperlink Icon="QuestionCircle48" Content="{x:Static resources:Strings.About_Title}" Command="{Binding LaunchAboutCommand, Mode=OneTime}" HorizontalAlignment="Center" />
                     <ui:Hyperlink Icon="Book24" Content="{x:Static resources:Strings.LaunchMenu_VexstrapWiki}" NavigateUri="https://bloxstraplabs.com/wiki/" HorizontalAlignment="Center" />
-                    <TextBlock Margin="0,8,0,0" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold">
-                        <Run Text="Latest Update: " />
-                        <Run Text="{Binding UpdateStatusText}" Foreground="{Binding UpdateStatusColor}" />
-                    </TextBlock>
+                    <StackPanel Margin="0,8,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Text="Latest Update: " />
+                        <TextBlock VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Text="{Binding UpdateStatusText}" Foreground="{Binding UpdateStatusColor}" Visibility="{Binding UpdateTextVisibility, Mode=OneWay}" />
+                        <ui:Button Margin="4,0,0,0" Padding="8,2,8,2" FontSize="11" Content="{x:Static resources:Strings.Menu_Vexstrap_UpdateNow}" Command="{Binding InstallLatestVersionCommand}" Visibility="{Binding UpdateButtonVisibility, Mode=OneWay}" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
