@@ -3811,6 +3811,105 @@ namespace Vexstrap.Resources {
                 return ResourceManager.GetString("LaunchMenu_UpdateStatus_CheckFailed", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Title {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Description {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Player {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Player", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Studio {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Studio", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Found_Message {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Found_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Found_Stock_Message {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Found_Stock_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Found_Copy {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Found_Copy", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Missing_Message {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Missing_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Blocked_RobloxRunning {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Blocked_RobloxRunning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_Blocked_UpdaterRunning {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_Blocked_UpdaterRunning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Vexstrap_InstallLocations_RefreshFailed {
+            get {
+                return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_RefreshFailed", resourceCulture);
+            }
+        }
     }
 }
 

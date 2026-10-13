@@ -3,6 +3,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
+using Vexstrap.UI.Elements.Dialogs;
 
 namespace Vexstrap.UI.ViewModels.Settings
 {
@@ -61,10 +62,30 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         public ICommand InstallLatestVersionCommand { get; } = new AsyncRelayCommand(Vexstrap.Installer.InstallLatestVersion);
 
+        private bool _isReinstallIdle = true;
+        public bool IsReinstallIdle
+        {
+            get => _isReinstallIdle;
+            private set
+            {
+                if (_isReinstallIdle != value)
+                {
+                    _isReinstallIdle = value;
+                    OnPropertyChanged(nameof(IsReinstallIdle));
+                }
+            }
+        }
+
+        public ICommand ViewPlayerLocationCommand => new RelayCommand(() => ViewInstallLocation(false));
+        public ICommand ViewStudioLocationCommand => new RelayCommand(() => ViewInstallLocation(true));
+
         public ICommand CleanNowCommand => new RelayCommand(CleanNow);
 
         private void CleanNow()
         {
+            if (!IsReinstallIdle)
+                return;
+
             CleanupResult result = Vexstrap.Utility.Cleaner.Run();
 
             if (result.IsBlocked || result.VersionCleanupBlocked)
@@ -90,6 +111,222 @@ namespace Vexstrap.UI.ViewModels.Settings
             System.Windows.MessageBox.Show(string.Format(Strings.Menu_Vexstrap_Cleanup_Done, Vexstrap.Utility.Cleaner.FormatBytes(result.BytesFreed)),
                 App.ProjectName, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
+
+        private static bool TryGetInstallPath(bool isStudio, out string folderPath, out bool isStockInstall)
+        {
+            folderPath = string.Empty;
+            isStockInstall = false;
+
+            string stateFile = isStudio ? App.StudioState.FileLocation : App.PlayerState.FileLocation;
+            string exeName = isStudio ? "RobloxStudioBeta.exe" : "RobloxPlayerBeta.exe";
+            string uninstallSubKey = isStudio
+                ? @"Software\Microsoft\Windows\CurrentVersion\Uninstall\roblox-studio"
+                : @"Software\Microsoft\Windows\CurrentVersion\Uninstall\roblox-player";
+
+            if (File.Exists(stateFile))
+            {
+                try
+                {
+                    string json = File.ReadAllText(stateFile);
+                    DistributionState? tempState = JsonSerializer.Deserialize<DistributionState>(json);
+
+                    if (!string.IsNullOrWhiteSpace(tempState?.VersionGuid))
+                    {
+                        string versionDir = Path.Combine(Paths.Versions, tempState.VersionGuid);
+                        if (File.Exists(Path.Combine(versionDir, exeName)))
+                        {
+                            folderPath = versionDir;
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine("VexstrapViewModel::TryGetInstallPath", $"Failed to read state file '{stateFile}'");
+                    App.Logger.WriteException("VexstrapViewModel::TryGetInstallPath", ex);
+                }
+            }
+
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(uninstallSubKey);
+                if (key?.GetValue("InstallLocation") is string stockFolder && !string.IsNullOrWhiteSpace(stockFolder))
+                {
+                    if (File.Exists(Path.Combine(stockFolder, exeName)))
+                    {
+                        folderPath = stockFolder;
+                        isStockInstall = true;
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("VexstrapViewModel::TryGetInstallPath", $"Failed to read registry fallback '{uninstallSubKey}'");
+                App.Logger.WriteException("VexstrapViewModel::TryGetInstallPath", ex);
+            }
+
+            return false;
+        }
+
+        private static bool TryReloadJsonState<T>(JsonManager<T> manager, out string? errorMessage) where T : class, new()
+        {
+            errorMessage = null;
+
+            if (!File.Exists(manager.FileLocation))
+                return true;
+
+            try
+            {
+                string contents = File.ReadAllText(manager.FileLocation);
+                T? parsed = JsonSerializer.Deserialize<T>(contents);
+
+                if (parsed is null)
+                    throw new ArgumentNullException("Deserialization returned null");
+
+                manager.Prop = parsed;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("VexstrapViewModel::TryReloadJsonState", $"Failed to reload '{manager.FileLocation}'");
+                App.Logger.WriteException("VexstrapViewModel::TryReloadJsonState", ex);
+                errorMessage = $"{manager.FileName}: {ex.Message}";
+                return false;
+            }
+        }
+
+        private static void RefreshStatesAfterReinstall()
+        {
+            var errors = new List<string>();
+
+            if (!TryReloadJsonState(App.PlayerState, out string? playerErr) && playerErr is not null)
+                errors.Add(playerErr);
+
+            if (!TryReloadJsonState(App.StudioState, out string? studioErr) && studioErr is not null)
+                errors.Add(studioErr);
+
+            if (!TryReloadJsonState(App.State, out string? stateErr) && stateErr is not null)
+                errors.Add(stateErr);
+
+            if (errors.Count > 0)
+            {
+                string warning = string.Format(
+                    Strings.Menu_Vexstrap_InstallLocations_RefreshFailed,
+                    string.Join("\n", errors));
+                Frontend.ShowMessageBox(warning, MessageBoxImage.Warning);
+            }
+        }
+
+        private void ViewInstallLocation(bool isStudio)
+        {
+            if (!IsReinstallIdle)
+                return;
+
+            string productName = isStudio
+                ? Strings.Menu_Vexstrap_InstallLocations_Studio
+                : Strings.Menu_Vexstrap_InstallLocations_Player;
+
+            if (TryGetInstallPath(isStudio, out string foundPath, out bool isStockInstall))
+            {
+                string template = isStockInstall
+                    ? Strings.Menu_Vexstrap_InstallLocations_Found_Stock_Message
+                    : Strings.Menu_Vexstrap_InstallLocations_Found_Message;
+
+                string message = string.Format(template, productName, foundPath);
+
+                var dialog = new FluentMessageBox(message, MessageBoxImage.Information, MessageBoxButton.OKCancel);
+                dialog.ButtonOne.Content = Strings.Menu_Vexstrap_InstallLocations_Found_Copy;
+                dialog.ButtonTwo.Content = Strings.Common_Close;
+                dialog.ShowDialog();
+
+                if (dialog.Result == MessageBoxResult.OK)
+                {
+                    try
+                    {
+                        Clipboard.SetDataObject(foundPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine("VexstrapViewModel::ViewInstallLocation", "Failed to copy install path to clipboard");
+                        App.Logger.WriteException("VexstrapViewModel::ViewInstallLocation", ex);
+                    }
+                }
+
+                return;
+            }
+
+            string missingPrompt = string.Format(Strings.Menu_Vexstrap_InstallLocations_Missing_Message, productName);
+            if (Frontend.ShowMessageBox(missingPrompt, MessageBoxImage.Question, MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                return;
+
+            LaunchReinstall(isStudio);
+        }
+
+        private void LaunchReinstall(bool isStudio)
+        {
+            string mode = isStudio ? "Studio" : "Player";
+
+            foreach (string name in Vexstrap.Utility.Cleaner.RobloxProcessNames)
+            {
+                var procs = Process.GetProcessesByName(name);
+                if (procs.Length > 0)
+                {
+                    foreach (var p in procs)
+                        p.Dispose();
+
+                    Frontend.ShowMessageBox(Strings.Menu_Vexstrap_InstallLocations_Blocked_RobloxRunning, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            string bootstrapperMutex = $"Vexstrap-Bootstrapper-{mode}";
+            string updaterMutex = $"Vexstrap-BackgroundUpdater-{mode}";
+            if (Utilities.DoesMutexExist(bootstrapperMutex) || Utilities.DoesMutexExist(updaterMutex))
+            {
+                Frontend.ShowMessageBox(Strings.Menu_Vexstrap_InstallLocations_Blocked_UpdaterRunning, MessageBoxImage.Warning);
+                return;
+            }
+
+            IsReinstallIdle = false;
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = Paths.Process,
+                Arguments = isStudio ? "-studio -nolaunch" : "-player -nolaunch",
+                UseShellExecute = false
+            };
+
+            var process = new Process
+            {
+                StartInfo = startInfo,
+                EnableRaisingEvents = true
+            };
+
+            process.Exited += (sender, args) =>
+            {
+                process.Dispose();
+
+                Application.Current?.Dispatcher.BeginInvoke(() =>
+                {
+                    RefreshStatesAfterReinstall();
+                    IsReinstallIdle = true;
+                });
+            };
+
+            try
+            {
+                process.Start();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Failed to start reinstall process for {mode}");
+                App.Logger.WriteException("VexstrapViewModel::LaunchReinstall", ex);
+                process.Dispose();
+                IsReinstallIdle = true;
+            }
+        }
+
         public ICommand ExportDataCommand => new RelayCommand(ExportData);
 
         private void ExportData()

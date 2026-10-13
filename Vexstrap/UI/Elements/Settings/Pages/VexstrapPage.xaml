@@ -39,7 +39,16 @@
         <controls:OptionControl
             Header="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_Title}"
             Description="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_Description}">
-            <ui:Button MinWidth="100" Content="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_CleanNow}" Command="{Binding CleanNowCommand}" />
+            <ui:Button MinWidth="100" Content="{x:Static resources:Strings.Menu_Vexstrap_Cleanup_CleanNow}" Command="{Binding CleanNowCommand}" IsEnabled="{Binding IsReinstallIdle, Mode=OneWay}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl
+            Header="{x:Static resources:Strings.Menu_Vexstrap_InstallLocations_Title}"
+            Description="{x:Static resources:Strings.Menu_Vexstrap_InstallLocations_Description}">
+            <StackPanel Orientation="Horizontal">
+                <ui:Button Margin="0,0,12,0" Content="{x:Static resources:Strings.Menu_Vexstrap_InstallLocations_Player}" Command="{Binding ViewPlayerLocationCommand}" IsEnabled="{Binding IsReinstallIdle, Mode=OneWay}" />
+                <ui:Button Content="{x:Static resources:Strings.Menu_Vexstrap_InstallLocations_Studio}" Command="{Binding ViewStudioLocationCommand}" IsEnabled="{Binding IsReinstallIdle, Mode=OneWay}" />
+            </StackPanel>
         </controls:OptionControl>
         <!-- This does not need i18n as this is locked behind "Developer Mode" -->
         <controls:OptionControl

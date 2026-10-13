@@ -1452,4 +1452,43 @@ Defaulting to {1}.</value>
   <data name="LaunchMenu_UpdateStatus_CheckFailed" xml:space="preserve">
     <value>Check Failed</value>
   </data>
+  <data name="Menu_Vexstrap_InstallLocations_Title" xml:space="preserve">
+    <value>Give path for</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Description" xml:space="preserve">
+    <value>View or copy the active installation folder for Roblox Player and Roblox Studio.</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Player" xml:space="preserve">
+    <value>Roblox Player</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Studio" xml:space="preserve">
+    <value>Roblox Studio</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Found_Message" xml:space="preserve">
+    <value>{0} is installed at:
+
+{1}</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Found_Stock_Message" xml:space="preserve">
+    <value>{0} (stock install) is installed at:
+
+{1}</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Found_Copy" xml:space="preserve">
+    <value>Copy Path</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Missing_Message" xml:space="preserve">
+    <value>{0} is not installed. Reinstall now?</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Blocked_RobloxRunning" xml:space="preserve">
+    <value>Roblox is currently running. Please close Roblox before reinstalling.</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_Blocked_UpdaterRunning" xml:space="preserve">
+    <value>Another Vexstrap installation or update is currently in progress.</value>
+  </data>
+  <data name="Menu_Vexstrap_InstallLocations_RefreshFailed" xml:space="preserve">
+    <value>Failed to reload state from disk after reinstall:
+
+{0}</value>
+  </data>
 </root>
