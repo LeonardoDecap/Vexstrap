@@ -1491,4 +1491,7 @@ Defaulting to {1}.</value>
 
 {0}</value>
   </data>
+  <data name="Menu_Settings_ReinstallRunning" xml:space="preserve">
+    <value>A Roblox reinstall is in progress. Settings will unlock when it finishes.</value>
+  </data>
 </root>

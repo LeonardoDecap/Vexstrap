@@ -24,6 +24,12 @@ namespace Vexstrap.UI.ViewModels.Settings
             get => App.LaunchSettings.TestModeFlag.Active;
             set
             {
+                if (ReinstallGate.IsRunning)
+                {
+                    OnPropertyChanged(nameof(TestModeEnabled));
+                    return;
+                }
+
                 if (value)
                 {
                     var result = Frontend.ShowMessageBox(Strings.Menu_TestMode_Prompt, MessageBoxImage.Information, MessageBoxButton.YesNo);
@@ -42,6 +48,12 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private void SaveSettings()
         {
+            if (ReinstallGate.IsRunning)
+            {
+                Frontend.ShowMessageBox(Strings.Menu_Settings_ReinstallRunning, MessageBoxImage.Warning);
+                return;
+            }
+
             const string LOG_IDENT = "MainWindowViewModel::SaveSettings";
 
             App.Settings.Save();

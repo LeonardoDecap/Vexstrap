@@ -47,6 +47,12 @@ namespace Vexstrap.UI.ViewModels.Settings
             {
                 if (App.Settings.Prop.CleanupSchedule != value)
                 {
+                    if (ReinstallGate.IsRunning)
+                    {
+                        OnPropertyChanged(nameof(CleanupScheduleSelection));
+                        return;
+                    }
+
                     // A new schedule starts the clock from now. The first cleanup runs one interval later.
                     if (value != CleanupFrequency.Off)
                     {
@@ -62,20 +68,6 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         public ICommand InstallLatestVersionCommand { get; } = new AsyncRelayCommand(Vexstrap.Installer.InstallLatestVersion);
 
-        private bool _isReinstallIdle = true;
-        public bool IsReinstallIdle
-        {
-            get => _isReinstallIdle;
-            private set
-            {
-                if (_isReinstallIdle != value)
-                {
-                    _isReinstallIdle = value;
-                    OnPropertyChanged(nameof(IsReinstallIdle));
-                }
-            }
-        }
-
         public ICommand ViewPlayerLocationCommand => new RelayCommand(() => ViewInstallLocation(false));
         public ICommand ViewStudioLocationCommand => new RelayCommand(() => ViewInstallLocation(true));
 
@@ -83,7 +75,7 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private void CleanNow()
         {
-            if (!IsReinstallIdle)
+            if (ReinstallGate.IsRunning)
                 return;
 
             CleanupResult result = Vexstrap.Utility.Cleaner.Run();
@@ -220,7 +212,7 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private void ViewInstallLocation(bool isStudio)
         {
-            if (!IsReinstallIdle)
+            if (ReinstallGate.IsRunning)
                 return;
 
             string productName = isStudio
@@ -265,6 +257,9 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private void LaunchReinstall(bool isStudio)
         {
+            if (ReinstallGate.IsRunning)
+                return;
+
             string mode = isStudio ? "Studio" : "Player";
 
             foreach (string name in Vexstrap.Utility.Cleaner.RobloxProcessNames)
@@ -288,42 +283,67 @@ namespace Vexstrap.UI.ViewModels.Settings
                 return;
             }
 
-            IsReinstallIdle = false;
+            ReinstallGate.Set(true);
 
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = Paths.Process,
-                Arguments = isStudio ? "-studio -nolaunch" : "-player -nolaunch",
-                UseShellExecute = false
-            };
-
-            var process = new Process
-            {
-                StartInfo = startInfo,
-                EnableRaisingEvents = true
-            };
-
-            process.Exited += (sender, args) =>
-            {
-                process.Dispose();
-
-                Application.Current?.Dispatcher.BeginInvoke(() =>
-                {
-                    RefreshStatesAfterReinstall();
-                    IsReinstallIdle = true;
-                });
-            };
+            Process? process = null;
 
             try
             {
-                process.Start();
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = Paths.Process,
+                    Arguments = isStudio ? "-studio -nolaunch" : "-player -nolaunch",
+                    UseShellExecute = false
+                };
+
+                process = new Process
+                {
+                    StartInfo = startInfo,
+                    EnableRaisingEvents = true
+                };
+
+                process.Exited += (sender, args) =>
+                {
+                    process.Dispose();
+
+                    var dispatcher = Application.Current?.Dispatcher;
+                    if (dispatcher is null)
+                    {
+                        ReinstallGate.Set(false);
+                        return;
+                    }
+
+                    dispatcher.BeginInvoke(() =>
+                    {
+                        try
+                        {
+                            RefreshStatesAfterReinstall();
+                        }
+                        catch (Exception ex)
+                        {
+                            App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Failed to refresh states after {mode} reinstall");
+                            App.Logger.WriteException("VexstrapViewModel::LaunchReinstall", ex);
+                        }
+                        finally
+                        {
+                            ReinstallGate.Set(false);
+                        }
+                    });
+                };
+
+                if (!process.Start())
+                {
+                    App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Process.Start returned false for {mode}");
+                    process.Dispose();
+                    ReinstallGate.Set(false);
+                }
             }
             catch (Exception ex)
             {
                 App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Failed to start reinstall process for {mode}");
                 App.Logger.WriteException("VexstrapViewModel::LaunchReinstall", ex);
-                process.Dispose();
-                IsReinstallIdle = true;
+                process?.Dispose();
+                ReinstallGate.Set(false);
             }
         }
 

@@ -3910,6 +3910,15 @@ namespace Vexstrap.Resources {
                 return ResourceManager.GetString("Menu_Vexstrap_InstallLocations_RefreshFailed", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string.
+        /// </summary>
+        public static string Menu_Settings_ReinstallRunning {
+            get {
+                return ResourceManager.GetString("Menu_Settings_ReinstallRunning", resourceCulture);
+            }
+        }
     }
 }
 

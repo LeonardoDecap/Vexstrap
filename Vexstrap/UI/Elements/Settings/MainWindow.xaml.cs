@@ -31,6 +31,7 @@ namespace Vexstrap.UI.Elements.Settings
             
             
             InitializeComponent();
+            ReinstallGate.Changed += ReinstallGate_Changed;
             
 
 
@@ -94,14 +95,35 @@ namespace Vexstrap.UI.Elements.Settings
 
         #endregion INavigationWindow methods
 
+        private void ReinstallGate_Changed(object? sender, EventArgs e)
+        {
+            bool enabled = !ReinstallGate.IsRunning;
+
+            RootGrid.IsEnabled = enabled;
+            TestModeToggle.IsEnabled = enabled;
+            SaveButton.IsEnabled = enabled;
+            SettingsCloseButton.IsEnabled = enabled;
+            ReinstallStatusText.Visibility = ReinstallGate.IsRunning ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         private void WpfUiWindow_Closing(object sender, CancelEventArgs e)
         {
+            if (ReinstallGate.IsRunning)
+            {
+                e.Cancel = true;
+                Frontend.ShowMessageBox(Strings.Menu_Settings_ReinstallRunning, MessageBoxImage.Warning);
+                return;
+            }
+
             if (App.FastFlags.Changed || App.PendingSettingTasks.Any())
             {
                 var result = Frontend.ShowMessageBox(Strings.Menu_UnsavedChanges, MessageBoxImage.Warning, MessageBoxButton.YesNo);
 
                 if (result != MessageBoxResult.Yes)
+                {
                     e.Cancel = true;
+                    return;
+                }
             }
             
             _state.Width = this.Width;
@@ -115,6 +137,8 @@ namespace Vexstrap.UI.Elements.Settings
 
         private void WpfUiWindow_Closed(object sender, EventArgs e)
         {
+            ReinstallGate.Changed -= ReinstallGate_Changed;
+
             if (App.LaunchSettings.TestModeFlag.Active)
                 LaunchHandler.LaunchRoblox(LaunchMode.Player);
             else

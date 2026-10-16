@@ -101,15 +101,18 @@
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <ui:ToggleSwitch IsChecked="{Binding TestModeEnabled, Mode=TwoWay}" />
+                    <ui:ToggleSwitch x:Name="TestModeToggle" IsChecked="{Binding TestModeEnabled, Mode=TwoWay}" />
                     <TextBlock Padding="12,0,0,0" Text="{x:Static resources:Strings.Menu_TestMode}" VerticalAlignment="Center" FontSize="14" />
                 </StackPanel>
             </StatusBarItem>
+            <StatusBarItem Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="ReinstallStatusText" Text="{x:Static resources:Strings.Menu_Settings_ReinstallRunning}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="13" Visibility="Collapsed" />
+            </StatusBarItem>
             <StatusBarItem Grid.Column="2" Padding="0,0,4,0">
-                <ui:Button Content="{x:Static resources:Strings.Menu_Save}" Appearance="Primary" Command="{Binding SaveSettingsCommand, Mode=OneWay}" />
+                <ui:Button x:Name="SaveButton" Content="{x:Static resources:Strings.Menu_Save}" Appearance="Primary" Command="{Binding SaveSettingsCommand, Mode=OneWay}" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" Padding="4,0,0,0">
-                <ui:Button Content="{x:Static resources:Strings.Common_Close}" Command="{Binding CloseWindowCommand, Mode=OneWay}" />
+                <ui:Button x:Name="SettingsCloseButton" Content="{x:Static resources:Strings.Common_Close}" Command="{Binding CloseWindowCommand, Mode=OneWay}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
