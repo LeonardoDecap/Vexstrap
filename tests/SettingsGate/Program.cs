@@ -111,6 +111,15 @@ internal static class Program
                 Assert(Directory.Exists(currentVersion), "cleanup preserves the current version");
             }
             App.PlayerState.Prop.VersionGuid = "";
+            var loadIcon = typeof(App).Assembly.GetType("Vexstrap.Utility.TaskbarIcon")!
+                .GetMethod("LoadIcon", BindingFlags.Static | BindingFlags.NonPublic)!;
+            using (var exeIcon = (System.Drawing.Icon)loadIcon.Invoke(null, new object[] { Environment.ProcessPath! })!)
+                Assert(exeIcon.Handle != IntPtr.Zero, "taskbar loader accepts an executable icon source");
+            string testIconPath = Path.Combine(testDirectory, "test.ico");
+            using (var file = File.Create(testIconPath))
+                System.Drawing.SystemIcons.Information.Save(file);
+            using (var fileIcon = (System.Drawing.Icon)loadIcon.Invoke(null, new object[] { testIconPath })!)
+                Assert(fileIcon.Handle != IntPtr.Zero, "taskbar loader accepts an ico file source");
             foreach (string icon in new[] { "Error", "Information", "Question", "Warning" })
             {
                 var resource = Application.GetResourceStream(new Uri($"pack://application:,,,/Vexstrap;component/Resources/MessageBox/{icon}.png"));

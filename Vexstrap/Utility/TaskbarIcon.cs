@@ -43,6 +43,11 @@ namespace Vexstrap.Utility
             return System.IO.File.Exists(shortcutIco) ? shortcutIco : Paths.Application;
         }
 
+        internal static Icon LoadIcon(string path) =>
+            string.Equals(System.IO.Path.GetExtension(path), ".ico", StringComparison.OrdinalIgnoreCase)
+                ? new Icon(path)
+                : Icon.ExtractAssociatedIcon(path) ?? throw new InvalidOperationException("No icon could be extracted from the application.");
+
         public static void Apply(Window window, string icoPath)
         {
             IntPtr hwnd = new WindowInteropHelper(window).Handle;
@@ -51,8 +56,9 @@ namespace Vexstrap.Utility
 
             try
             {
-                var newBig = new System.Drawing.Icon(new System.Drawing.Icon(icoPath), new System.Drawing.Size(256, 256));
-                var newSmall = new System.Drawing.Icon(new System.Drawing.Icon(icoPath), new System.Drawing.Size(16, 16));
+                using var source = LoadIcon(icoPath);
+                var newBig = new Icon(source, new System.Drawing.Size(256, 256));
+                var newSmall = new Icon(source, new System.Drawing.Size(16, 16));
 
                 // WM_SETICON does not take ownership, so the old handles can be released after the swap
                 SendMessage(hwnd, WM_SETICON, ICON_BIG, newBig.Handle);
