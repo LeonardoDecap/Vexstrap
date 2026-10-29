@@ -968,6 +968,7 @@ namespace Vexstrap
             }
 
             int failedCount = 0;
+            bool isBlocked = false;
 
             foreach (string dir in Directory.GetDirectories(Paths.Versions))
             {
@@ -981,7 +982,10 @@ namespace Vexstrap
                     // check if it's still being used first
                     // we dont want to accidentally delete the files of a running roblox instance
                     if (IsVersionDirectoryInUse(dir))
+                    {
+                        isBlocked = true;
                         continue;
+                    }
 
                     try
                     {
@@ -996,7 +1000,7 @@ namespace Vexstrap
                 }
             }
 
-            return (FailedCount: failedCount, IsBlocked: false);
+            return (FailedCount: failedCount, IsBlocked: isBlocked);
         }
 
         private void MigrateCompatibilityFlags()

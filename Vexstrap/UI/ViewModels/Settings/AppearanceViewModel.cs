@@ -167,13 +167,16 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private static readonly BootstrapperIcon[] ThemeIconOrder = new[]
         {
+            BootstrapperIcon.IconVexstrap,
             BootstrapperIcon.IconVexstrapClassic,
             BootstrapperIcon.IconThemeCyberpunkCyan,
             BootstrapperIcon.IconThemeEmeraldMint,
             BootstrapperIcon.IconThemeSunsetBlaze,
             BootstrapperIcon.IconThemeObsidianStealth,
             BootstrapperIcon.IconThemeBloodRuby,
-            BootstrapperIcon.IconThemeNordicFrost
+            BootstrapperIcon.IconThemeNordicFrost,
+            BootstrapperIcon.IconThemeMidnightAmethyst,
+            BootstrapperIcon.IconThemeSolarFlare
         };
 
         public System.Collections.Generic.IEnumerable<Models.BootstrapperIconEntry> ThemeIcons =>

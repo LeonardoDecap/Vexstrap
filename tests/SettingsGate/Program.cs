@@ -95,6 +95,33 @@ internal static class Program
                 .Invoke(null, new object[] { testDirectory });
             App.State.Save();
             App.State.Load();
+            // Locked old versions must not be reported as a successful cleanup.
+            string currentVersion = Path.Combine(testDirectory, "Versions", "version-current");
+            string oldVersion = Path.Combine(testDirectory, "Versions", "version-old");
+            Directory.CreateDirectory(currentVersion);
+            Directory.CreateDirectory(oldVersion);
+            string oldExecutable = Path.Combine(oldVersion, "RobloxPlayerBeta.exe");
+            File.WriteAllText(oldExecutable, "test fixture, not an executable");
+            App.PlayerState.Prop.VersionGuid = "version-current";
+            using (var heldFile = File.Open(oldExecutable, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                var cleanup = Bootstrapper.CleanupVersionsFolder();
+                Assert(cleanup.IsBlocked && Directory.Exists(oldVersion),
+                    "cleanup reports a locked old version as blocked and preserves it");
+                Assert(Directory.Exists(currentVersion), "cleanup preserves the current version");
+            }
+            App.PlayerState.Prop.VersionGuid = "";
+            foreach (string icon in new[] { "Error", "Information", "Question", "Warning" })
+            {
+                var resource = Application.GetResourceStream(new Uri($"pack://application:,,,/Vexstrap;component/Resources/MessageBox/{icon}.png"));
+                using var stream = resource.Stream;
+                Assert(stream.Length > 0, $"{icon} dialog image is packaged in the application");
+            }
+            var appearance = (AppearanceViewModel)new AppearancePage().DataContext;
+            var visibleIcons = appearance.ThemeIcons.Concat(appearance.LegacyIcons).Concat(appearance.CustomIcons)
+                .Select(entry => entry.IconType).ToHashSet();
+            Assert(appearance.Icons.All(entry => visibleIcons.Contains(entry.IconType)),
+                "every supported icon can be selected on the appearance page");
             typeof(App).GetProperty(nameof(App.ReinstallGenerationAtLoad))!
                 .SetValue(null, ReinstallGate.ReadGeneration());
 
