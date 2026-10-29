@@ -1,88 +1,38 @@
-> [!CAUTION]
-> The only official places to download Vexstrap are this GitHub repository and [Vexstraplabs.com](https://Vexstraplabs.com). Any other websites offering downloads or claiming to be us are not owned by us.
+# Vexstrap
 
-> [!IMPORTANT]
-> Vexstrap is not under active development anymore. Any issues or pull requests opened may take a while to get a response.
+Vexstrap is a third-party Windows bootstrapper for Roblox, with options for customizing the experience. It is not affiliated with Roblox.
 
-<p align="center">
-    <img src="https://github.com/Vexstraplabs/Vexstrap/raw/main/Images/Vexstrap-full-dark.png#gh-dark-mode-only" width="380">
-    <img src="https://github.com/Vexstraplabs/Vexstrap/raw/main/Images/Vexstrap-full-light.png#gh-light-mode-only" width="380">
-</p>
-
-<div align="center">
-
-[![License][shield-repo-license]][repo-license]
-[![GitHub Workflow Status][shield-repo-workflow]][repo-actions]
-[![Crowdin][shield-crowdin-status]][crowdin-project]
-[![Downloads][shield-repo-releases]][repo-releases]
-[![Version][shield-repo-latest]][repo-latest]
-[![Discord][shield-discord-server]][discord-invite]
-[![lol][shield-tenor-meme]][tenor-gif]
-
-</div>
-
-----
-
-Vexstrap is a third-party replacement for the standard Roblox bootstrapper, providing additional useful features and improvements.
-
-Running into a problem or need help with something? [Check out the Wiki](https://Vexstraplabs.com/wiki). If you can't find anything, or would like to suggest something, please [submit an issue](https://github.com/Vexstraplabs/Vexstrap/issues).
-
-Vexstrap is only supported for PCs running Windows.
-
-## Frequently Asked Questions
-
-**Q: Is this malware?**
-
-**A:** No. The source code here is viewable to all, and it'd be impossible for us to slip anything malicious into the downloads without anyone noticing. Just be sure you're downloading it from an official source. The only two official sources are this GitHub repository and [Vexstraplabs.com](https://Vexstraplabs.com).
-
-**Q: Can using this get me banned?**
-
-**A:** No, it shouldn't. Vexstrap doesn't interact with the Roblox client in the same way that exploits do. [Read more about that here.](https://Vexstraplabs.com/wiki/info/Vexstrap-and-bans)
 ## Features
 
-- Hassle-free Discord Rich Presence to let your friends know what you're playing at a glance
-- Simple support for modding of content files for customizability (death sound, mouse cursor, etc)
-- See where your server is geographically located (courtesy of [ipinfo.io](https://ipinfo.io))
-- Ability to configure graphics fidelity and UI experience
+- Discord Rich Presence to show what you're playing.
+- Support for customizing content such as sounds and mouse cursors.
+- Server location information provided by [ipinfo.io](https://ipinfo.io).
+- Settings for graphics and the user interface.
 
-## Installing
-Download the [latest release of Vexstrap](https://github.com/Vexstraplabs/Vexstrap/releases/latest), and run it. Configure your preferences if needed, and install. That's about it!
+## Installation
 
-Alternatively, you can install Vexstrap via [Winget](https://winstall.app/apps/pizzaboxer.Vexstrap) by running this in a Command Prompt window:
+Download an available build from this repository's [Releases page](https://github.com/LeonardoDecap/Vexstrap/releases) and run it on Windows. The current source requires the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0). Follow the installer's prompts to configure Vexstrap, then use its Start menu entry to change settings later.
+
+Changes on development branches are source code and are not necessarily included in a published release. Check the release notes to see what a download contains.
+
+## Building from source
+
+The repository uses the .NET 6 SDK, with the SDK version specified in `global.json`, and includes WPF UI as a Git submodule. On Windows, clone the repository with its submodules, then build the solution:
+
+```powershell
+git clone --recurse-submodules https://github.com/LeonardoDecap/Vexstrap.git
+cd Vexstrap
+dotnet build Vexstrap.sln
 ```
-> winget install Vexstrap
-```
 
-You will also need the [.NET 6 Desktop Runtime](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win11-x64&apphost_version=6.0.36&gui=true). If you don't already have it installed, you'll be prompted to install it anyway. Be sure to install Vexstrap after you've installed this.
+If you've already cloned the repository, run `git submodule update --init --recursive` before building.
 
-It's not unlikely that Windows Smartscreen will show a popup when you run Vexstrap for the first time. This happens because it's an unknown program, not because it's actually detected as being malicious. To dismiss it, just click on "More info" and then "Run anyway".
+## Help and issues
 
-Once installed, Vexstrap is added to your Start Menu, where you can access the menu and reconfigure your preferences if needed.
+For problems or suggestions, open an issue in the [Vexstrap repository](https://github.com/LeonardoDecap/Vexstrap/issues). Include the relevant steps and error details, and remove personal information from any logs before sharing them.
 
-## Code
+Third-party tools can be affected by changes to Roblox or its policies. Check Roblox's current terms and policies when deciding whether to use them.
 
-Vexstrap uses the [WPF UI](https://github.com/lepoco/wpfui) library for the user interface design. We currently use and maintain our own fork of WPF UI at [Vexstraplabs/wpfui](https://github.com/Vexstraplabs/wpfui).
+## License
 
-
-[shield-repo-license]:  https://img.shields.io/github/license/Vexstraplabs/Vexstrap
-[shield-repo-workflow]: https://img.shields.io/github/actions/workflow/status/Vexstraplabs/Vexstrap/ci-release.yml?branch=main&label=builds
-[shield-repo-releases]: https://img.shields.io/github/downloads/Vexstraplabs/Vexstrap/latest/total?color=981bfe
-[shield-repo-latest]:   https://img.shields.io/github/v/release/Vexstraplabs/Vexstrap?color=7a39fb
-
-[shield-crowdin-status]: https://badges.crowdin.net/Vexstrap/localized.svg
-[shield-discord-server]: https://img.shields.io/discord/1099468797410283540?logo=discord&logoColor=white&label=discord&color=4d3dff
-[shield-tenor-meme]:     https://img.shields.io/badge/mom_made-pizza_rolls-orange
-
-[repo-license]:  https://github.com/Vexstraplabs/Vexstrap/blob/main/LICENSE
-[repo-actions]:  https://github.com/Vexstraplabs/Vexstrap/actions
-[repo-releases]: https://github.com/Vexstraplabs/Vexstrap/releases
-[repo-latest]:   https://github.com/Vexstraplabs/Vexstrap/releases/latest
-
-[crowdin-project]: https://crowdin.com/project/Vexstrap
-[discord-invite]:  https://discord.gg/nKjV3mGq6R
-[tenor-gif]:       https://media.tenor.com/FIkSGbGycmAAAAAd/manly-roblox.gif
-
-## Code signing policy
-
-Thanks to [SignPath.io](https://signpath.io/) for providing a free code signing service, and the [SignPath Foundation](https://signpath.org/) for providing the free code signing certificate.
-
+See [LICENSE](LICENSE).
