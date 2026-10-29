@@ -1494,4 +1494,13 @@ Defaulting to {1}.</value>
   <data name="Menu_Settings_ReinstallRunning" xml:space="preserve">
     <value>A Roblox reinstall is in progress. Settings will unlock when it finishes.</value>
   </data>
+  <data name="Bootstrapper_OperationRunning" xml:space="preserve">
+    <value>Another Roblox or Vexstrap operation is in progress. Please try again when it finishes.</value>
+  </data>
+  <data name="Menu_Settings_RefreshPending" xml:space="preserve">
+    <value>Settings could not reload its files. Retrying; changes cannot be saved yet.</value>
+  </data>
+  <data name="Menu_Settings_RefreshClose" xml:space="preserve">
+    <value>Settings could not reload its files. Close without saving changes?</value>
+  </data>
 </root>

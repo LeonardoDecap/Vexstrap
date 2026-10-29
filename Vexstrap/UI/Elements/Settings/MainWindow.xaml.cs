@@ -1,11 +1,14 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
+using System.Windows.Threading;
 
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
 using Vexstrap.UI.ViewModels.Settings;
+using Vexstrap.UI.ViewModels;
 
 namespace Vexstrap.UI.Elements.Settings
 {
@@ -15,6 +18,9 @@ namespace Vexstrap.UI.Elements.Settings
     public partial class MainWindow : INavigationWindow
     {
         private Models.Persistable.WindowState _state => App.State.Prop.SettingsWindow;
+        private readonly DispatcherTimer _reinstallTimer = new() { Interval = TimeSpan.FromMilliseconds(250) };
+        private bool _wasReinstallRunning;
+        private DateTime _nextRefreshAttempt = DateTime.MinValue;
 
         public MainWindow(bool showAlreadyRunningWarning)
         {
@@ -31,7 +37,14 @@ namespace Vexstrap.UI.Elements.Settings
             
             
             InitializeComponent();
+            RootFrame.Navigated += RootFrame_Navigated;
+            ReinstallGate.BeginMonitoringGeneration(App.ReinstallGenerationAtLoad);
             ReinstallGate.Changed += ReinstallGate_Changed;
+            _reinstallTimer.Tick += ReinstallGate_Changed;
+            _wasReinstallRunning = App.StateLoadedDuringReinstall || ReinstallGate.IsOperationRunning ||
+                StateChangedSinceLoad(App.State) || StateChangedSinceLoad(App.PlayerState) || StateChangedSinceLoad(App.StudioState);
+            ReinstallGate_Changed(this, EventArgs.Empty);
+            _reinstallTimer.Start();
             
 
 
@@ -79,6 +92,39 @@ namespace Vexstrap.UI.Elements.Settings
             AlreadyRunningSnackbar.Show();
         }
 
+        private static bool StateChangedSinceLoad<T>(JsonManager<T> manager) where T : class, new()
+        {
+            if (!manager.Loaded)
+                return false;
+            try
+            {
+                return manager.IsSaved ? manager.HasFileOnDiskChanged() : manager.LastFileHash is not null;
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return true;
+            }
+        }
+
+        private static void RefreshBehaviourBindings(object? content)
+        {
+            if (content is FrameworkElement { DataContext: NotifyPropertyChangedViewModel viewModel })
+            {
+                viewModel.OnPropertyChanged(string.Empty);
+                if (viewModel is BehaviourViewModel)
+                {
+                    viewModel.OnPropertyChanged(nameof(BehaviourViewModel.IsRobloxInstallationMissing));
+                    viewModel.OnPropertyChanged(nameof(BehaviourViewModel.ForceRobloxReinstallation));
+                }
+            }
+        }
+
+        private void RootFrame_Navigated(object sender, NavigationEventArgs e) => RefreshBehaviourBindings(e.Content);
+
         #region INavigationWindow methods
 
         public Frame GetFrame() => RootFrame;
@@ -97,18 +143,61 @@ namespace Vexstrap.UI.Elements.Settings
 
         private void ReinstallGate_Changed(object? sender, EventArgs e)
         {
-            bool enabled = !ReinstallGate.IsRunning;
+            bool running = ReinstallGate.IsOperationRunning;
+            bool finished = _wasReinstallRunning && !running;
+            _wasReinstallRunning = running;
+            bool generationChanged = ReinstallGate.ObserveGenerationChange();
+            if (finished || generationChanged)
+            {
+                ReinstallGate.RecoveryPending = true;
+                _nextRefreshAttempt = DateTime.MinValue;
+            }
+
+            if (!running && ReinstallGate.RecoveryPending && DateTime.UtcNow >= _nextRefreshAttempt)
+            {
+                _nextRefreshAttempt = DateTime.UtcNow.AddSeconds(2);
+                try
+                {
+                    using var readLock = ReinstallOperationLock.TryAcquire(exclusive: false);
+                    if (readLock is not null && !ReinstallGate.IsOperationRunning &&
+                        VexstrapViewModel.RefreshStatesAfterReinstall(showWarning: finished) &&
+                        !ReinstallGate.HasUnseenGeneration())
+                    {
+                        ReinstallGate.RecoveryPending = false;
+                        RefreshBehaviourBindings(RootFrame.Content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteException("MainWindow::ReinstallGate_Changed", ex);
+                }
+            }
+            bool enabled = !running && !ReinstallGate.RecoveryPending;
 
             RootGrid.IsEnabled = enabled;
             TestModeToggle.IsEnabled = enabled;
             SaveButton.IsEnabled = enabled;
-            SettingsCloseButton.IsEnabled = enabled;
-            ReinstallStatusText.Visibility = ReinstallGate.IsRunning ? Visibility.Visible : Visibility.Collapsed;
+            SettingsCloseButton.IsEnabled = !running;
+            ReinstallStatusText.Text = running ? Strings.Menu_Settings_ReinstallRunning : Strings.Menu_Settings_RefreshPending;
+            ReinstallStatusText.Visibility = enabled ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void WpfUiWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (ReinstallGate.IsRunning)
+            // The reinstall can finish just before the next timer tick. Refresh the
+            // state before the close handler writes window placement back to disk.
+            if ((_wasReinstallRunning || ReinstallGate.IsRunning) && !ReinstallGate.IsOperationRunning)
+                ReinstallGate_Changed(this, EventArgs.Empty);
+
+            if (ReinstallGate.RecoveryPending && !ReinstallGate.IsOperationRunning)
+            {
+                if (Frontend.ShowMessageBox(Strings.Menu_Settings_RefreshClose, MessageBoxImage.Warning, MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                    e.Cancel = true;
+                return; // Do not overwrite unreadable state with stale values.
+            }
+
+            using var stateLock = ReinstallOperationLock.TryStart(reinstall: false);
+            if (stateLock is null || ReinstallGate.IsRunning)
             {
                 e.Cancel = true;
                 Frontend.ShowMessageBox(Strings.Menu_Settings_ReinstallRunning, MessageBoxImage.Warning);
@@ -138,6 +227,9 @@ namespace Vexstrap.UI.Elements.Settings
         private void WpfUiWindow_Closed(object sender, EventArgs e)
         {
             ReinstallGate.Changed -= ReinstallGate_Changed;
+            RootFrame.Navigated -= RootFrame_Navigated;
+            _reinstallTimer.Stop();
+            _reinstallTimer.Tick -= ReinstallGate_Changed;
 
             if (App.LaunchSettings.TestModeFlag.Active)
                 LaunchHandler.LaunchRoblox(LaunchMode.Player);

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Vexstrap/UI/ReinstallGate.cs" Link="ReinstallGate.cs" />
+    <Compile Include="../../Vexstrap/Utility/ReinstallOperationLock.cs" Link="ReinstallOperationLock.cs" />
+    <Compile Include="../../Vexstrap/Utility/InterProcessLock.cs" Link="InterProcessLock.cs" />
+    <Compile Include="../../Vexstrap/JsonManager.cs" Link="JsonManager.cs" />
+  </ItemGroup>
+</Project>

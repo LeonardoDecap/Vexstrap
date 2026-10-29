@@ -32,6 +32,11 @@ namespace Vexstrap
         public const string UninstallKey = $@"Software\Microsoft\Windows\CurrentVersion\Uninstall\{ProjectName}";
 
         public static LaunchSettings LaunchSettings { get; private set; } = null!;
+        public static bool StateLoadedDuringReinstall { get; private set; }
+        public static string? ReinstallGenerationAtLoad { get; private set; } = string.Empty;
+        public static bool SettingsReloadRequired { get; set; }
+        public static bool FastFlagsReloadRequired { get; set; }
+        public static bool? PendingForceReinstall { get; set; }
 
         public static BuildMetadataAttribute BuildMetadata = Assembly.GetExecutingAssembly().GetCustomAttribute<BuildMetadataAttribute>()!;
 
@@ -284,6 +289,23 @@ namespace Vexstrap
 
             LaunchSettings = new LaunchSettings(e.Args);
 
+            if (LaunchSettings.SettingsReinstallFlag.Active)
+                ReinstallGate.HoldMarker();
+
+            // Reserve the operation before loading or mutating installation state.
+            // Menu selections reserve it later, when they actually launch Roblox.
+            bool launchesRoblox = !LaunchSettings.UninstallFlag.Active && !LaunchSettings.MenuFlag.Active &&
+                !LaunchSettings.WatcherFlag.Active &&
+                (LaunchSettings.BackgroundUpdaterFlag.Active || LaunchSettings.RobloxLaunchMode != LaunchMode.None);
+            if (launchesRoblox && !LaunchHandler.TryStartRobloxOperation())
+            {
+                LaunchHandler.ReportBlockedRobloxOperation();
+                return;
+            }
+
+            if (launchesRoblox && LaunchSettings.SettingsReinstallFlag.Active)
+                ReinstallGate.MarkStarted();
+
             // installation check begins here
             using var uninstallKey = Registry.CurrentUser.OpenSubKey(UninstallKey);
             string? installLocation = null;
@@ -374,32 +396,49 @@ namespace Vexstrap
                     Terminate();
                 }
 
-                Settings.Load();
-                State.Load();
-                FastFlags.Load();
+                // A reopened Settings window may race the reinstall's JSON writes.
+                // Take a shared operation lock when possible; otherwise load without
+                // the usual recovery write and refresh after the reinstall finishes.
+                using (var readLock = LaunchSettings.SettingsReinstallFlag.Active
+                    ? null : ReinstallOperationLock.TryStart(reinstall: false))
+                {
+                    bool safeToRepair = LaunchSettings.SettingsReinstallFlag.Active || readLock is not null;
+                    StateLoadedDuringReinstall = !safeToRepair;
+                    ReinstallGenerationAtLoad = ReinstallGate.ReadGeneration();
+                    StateLoadedDuringReinstall |= ReinstallGenerationAtLoad is null;
+                    Settings.Load(repairOnFailure: safeToRepair);
+                    State.Load(repairOnFailure: safeToRepair);
+                    FastFlags.Load(repairOnFailure: safeToRepair);
+                    StateLoadedDuringReinstall |= ReinstallGate.IsOperationRunning && !LaunchSettings.SettingsReinstallFlag.Active;
+                    SettingsReloadRequired = StateLoadedDuringReinstall;
+                    FastFlagsReloadRequired = StateLoadedDuringReinstall;
+                }
 
                 string shortcutSignature = $"{App.Version}|{Settings.Prop.BootstrapperIcon}|{Settings.Prop.BootstrapperIconCustomLocation}";
 
 #if DEBUG
-                Vexstrap.Utility.Shortcut.ManageTestShortcut();
+                if (!ReinstallGate.IsRunning)
+                    Vexstrap.Utility.Shortcut.ManageTestShortcut();
 #else
-                if (Settings.Prop.LastShortcutSignature != shortcutSignature)
+                if (!ReinstallGate.IsRunning && Settings.Prop.LastShortcutSignature != shortcutSignature)
                 {
                     Logger.WriteLine(LOG_IDENT, $"Shortcut signature changed to {shortcutSignature}. Refreshing shortcuts.");
                     Vexstrap.Utility.Shortcut.RefreshShortcuts();
                     Settings.Prop.LastShortcutSignature = shortcutSignature;
                     Settings.Save();
                 }
-                Vexstrap.Utility.Shortcut.CleanupTestShortcut();
+                if (!ReinstallGate.IsRunning)
+                    Vexstrap.Utility.Shortcut.CleanupTestShortcut();
 #endif
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {
                     Settings.Prop.Locale = "nil";
-                    Settings.Save();
+                    if (!ReinstallGate.IsRunning)
+                        Settings.Save();
                 }
 
-                if (App.IsPlayerInstalled)
+                if (!ReinstallGate.IsRunning && App.IsPlayerInstalled)
                 {
                     WindowsRegistry.CheckAndRepairPlayer();
                 }
@@ -410,7 +449,7 @@ namespace Vexstrap
                 Locale.Set(Settings.Prop.Locale);
 
                 // scheduled cleanup; never allowed to block startup
-                if (!LaunchSettings.BackgroundUpdaterFlag.Active)
+                if (!LaunchSettings.BackgroundUpdaterFlag.Active && !ReinstallGate.IsRunning)
                 {
                     try
                     {
@@ -422,7 +461,7 @@ namespace Vexstrap
                     }
                 }
 
-                if (!LaunchSettings.BypassUpdateCheck)
+                if (!LaunchSettings.BypassUpdateCheck && !ReinstallGate.IsRunning)
                     Installer.HandleUpgrade();
 
                 LaunchHandler.ProcessLaunchArgs();

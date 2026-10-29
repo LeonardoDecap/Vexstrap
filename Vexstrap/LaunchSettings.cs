@@ -23,6 +23,8 @@ namespace Vexstrap
         public LaunchFlag UninstallFlag             { get; } = new("uninstall");
 
         public LaunchFlag NoLaunchFlag              { get; } = new("nolaunch");
+
+        public LaunchFlag SettingsReinstallFlag     { get; } = new("settingsreinstall");
         
         public LaunchFlag TestModeFlag              { get; } = new("testmode");
 

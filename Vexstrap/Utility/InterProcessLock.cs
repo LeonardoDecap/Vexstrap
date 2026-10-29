@@ -11,6 +11,7 @@ namespace Vexstrap.Utility
         public Mutex Mutex { get; private set; }
 
         public bool IsAcquired { get; private set; }
+        private bool _disposed;
 
         public InterProcessLock(string name) : this(name, TimeSpan.Zero) { }
 
@@ -30,11 +31,17 @@ namespace Vexstrap.Utility
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
             if (IsAcquired)
             {
                 Mutex.ReleaseMutex();
                 IsAcquired = false;
             }
+
+            Mutex.Dispose();
+            _disposed = true;
 
             GC.SuppressFinalize(this);
         }

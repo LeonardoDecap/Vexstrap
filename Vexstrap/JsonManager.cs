@@ -14,6 +14,8 @@ namespace Vexstrap
         /// The file hash when last retrieved from disk
         /// </summary>
         public string? LastFileHash { get; private set; }
+        public bool HadFileWhenLoaded { get; private set; }
+        public bool LastSaveSucceeded { get; private set; }
 
         public bool Loaded { get; protected set; } = false;
 
@@ -32,9 +34,14 @@ namespace Vexstrap
             ClassName = string.IsNullOrEmpty(className) ? typeof(T).Name : className;
         }
 
-        public virtual bool Load(bool alertFailure = true)
+        public virtual bool Load(bool alertFailure = true, bool repairOnFailure = true)
         {
             string LOG_IDENT = $"{LOG_IDENT_CLASS}::Load";
+
+            // Never replace an unreadable file with defaults while another process
+            // may be in the middle of writing it.
+            if (UI.ReinstallGate.IsRunning && !App.LaunchSettings.SettingsReinstallFlag.Active)
+                repairOnFailure = false;
 
             App.Logger.WriteLine(LOG_IDENT, $"Loading from {FileLocation}...");
 
@@ -42,6 +49,7 @@ namespace Vexstrap
             {
                 if (File.Exists(FileLocation))
                 {
+                    HadFileWhenLoaded = true;
                     string contents = File.ReadAllText(FileLocation);
 
                     T? settings = JsonSerializer.Deserialize<T>(contents);
@@ -70,7 +78,7 @@ namespace Vexstrap
                 App.Logger.WriteLine(LOG_IDENT, "Failed to load!");
                 App.Logger.WriteException(LOG_IDENT, ex);
 
-                if (alertFailure)
+                if (alertFailure && repairOnFailure)
                 {
                     string message = "";
 
@@ -95,7 +103,8 @@ namespace Vexstrap
                 }
 
                 Loaded = true;
-                Save();
+                if (repairOnFailure)
+                    Save();
 
                 return false;
             }
@@ -104,6 +113,7 @@ namespace Vexstrap
         public virtual void Save()
         {
             string LOG_IDENT = $"{LOG_IDENT_CLASS}::Save";
+            LastSaveSucceeded = false;
             
             App.Logger.WriteLine(LOG_IDENT, $"Saving to {FileLocation}...");
 
@@ -116,6 +126,8 @@ namespace Vexstrap
                 File.WriteAllText(FileLocation, contents);
 
                 LastFileHash = MD5Hash.FromString(contents);
+                HadFileWhenLoaded = true;
+                LastSaveSucceeded = true;
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
@@ -142,6 +154,8 @@ namespace Vexstrap
                     File.Delete(FileLocation);
 
                     Loaded = false;
+                    LastFileHash = null;
+                    HadFileWhenLoaded = false;
                     App.Logger.WriteLine(LOG_IDENT, "Delete complete!");
                 }
                 else

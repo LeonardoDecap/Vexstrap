@@ -16,8 +16,8 @@ namespace Vexstrap.Utility
 
         internal static readonly string[] RobloxProcessNames = { "RobloxPlayerBeta", "RobloxStudioBeta", "RobloxCrashHandler" };
 
-        // folders inside Temp\Vexstrap that must never be touched
-        private static readonly string[] ProtectedTempFolders = { "Updates", "Logs" };
+        // Folders inside Temp\Vexstrap that must never be touched, including live lock files.
+        private static readonly string[] ProtectedTempFolders = { "Updates", "Logs", "Locks" };
 
         /// <summary>
         /// Cleans temp files, the Roblox download cache and old Roblox versions.

@@ -750,6 +750,13 @@ namespace Vexstrap
         {
             const string LOG_IDENT = "Installer::InstallLatestVersion";
 
+            using var stateLock = ReinstallOperationLock.TryStart(reinstall: false);
+            if (stateLock is null || ReinstallGate.IsRunning)
+            {
+                Frontend.ShowMessageBox(Strings.Menu_Settings_ReinstallRunning, MessageBoxImage.Warning);
+                return;
+            }
+
             // a. Already on latest? Say "Already on the latest version" and stop.
             Models.APIs.GitHub.GithubRelease? releaseInfo;
             try

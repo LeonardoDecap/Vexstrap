@@ -47,7 +47,8 @@ namespace Vexstrap.UI.ViewModels.Settings
             {
                 if (App.Settings.Prop.CleanupSchedule != value)
                 {
-                    if (ReinstallGate.IsRunning)
+                    using var stateLock = ReinstallOperationLock.TryStart(reinstall: false);
+                    if (stateLock is null || ReinstallGate.IsRunning)
                     {
                         OnPropertyChanged(nameof(CleanupScheduleSelection));
                         return;
@@ -75,7 +76,8 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private void CleanNow()
         {
-            if (ReinstallGate.IsRunning)
+            using var stateLock = ReinstallOperationLock.TryStart(reinstall: false);
+            if (stateLock is null || ReinstallGate.IsRunning)
                 return;
 
             CleanupResult result = Vexstrap.Utility.Cleaner.Run();
@@ -166,31 +168,43 @@ namespace Vexstrap.UI.ViewModels.Settings
             errorMessage = null;
 
             if (!File.Exists(manager.FileLocation))
-                return true;
-
-            try
             {
-                string contents = File.ReadAllText(manager.FileLocation);
-                T? parsed = JsonSerializer.Deserialize<T>(contents);
+                if (manager.LastFileHash is null && !manager.HadFileWhenLoaded)
+                    return true;
 
-                if (parsed is null)
-                    throw new ArgumentNullException("Deserialization returned null");
-
-                manager.Prop = parsed;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteLine("VexstrapViewModel::TryReloadJsonState", $"Failed to reload '{manager.FileLocation}'");
-                App.Logger.WriteException("VexstrapViewModel::TryReloadJsonState", ex);
-                errorMessage = $"{manager.FileName}: {ex.Message}";
+                errorMessage = $"{manager.FileName}: file not found";
+                App.Logger.WriteLine("VexstrapViewModel::TryReloadJsonState", errorMessage);
                 return false;
             }
+
+            // Use the manager's read-only reload so it also records the new file hash.
+            // Otherwise later change detection still compares against the old state.
+            if (manager.Load(alertFailure: false, repairOnFailure: false))
+                return true;
+
+            errorMessage = $"{manager.FileName}: failed to read or parse file";
+            return false;
         }
 
-        private static void RefreshStatesAfterReinstall()
+        internal static bool RefreshStatesAfterReinstall(bool showWarning = true)
         {
             var errors = new List<string>();
+
+            if (App.SettingsReloadRequired)
+            {
+                if (TryReloadJsonState(App.Settings, out string? settingsError))
+                    App.SettingsReloadRequired = false;
+                else if (settingsError is not null)
+                    errors.Add(settingsError);
+            }
+
+            if (App.FastFlagsReloadRequired)
+            {
+                if (TryReloadJsonState(App.FastFlags, out string? fastFlagsError))
+                    App.FastFlagsReloadRequired = false;
+                else if (fastFlagsError is not null)
+                    errors.Add(fastFlagsError);
+            }
 
             if (!TryReloadJsonState(App.PlayerState, out string? playerErr) && playerErr is not null)
                 errors.Add(playerErr);
@@ -198,16 +212,25 @@ namespace Vexstrap.UI.ViewModels.Settings
             if (!TryReloadJsonState(App.StudioState, out string? studioErr) && studioErr is not null)
                 errors.Add(studioErr);
 
-            if (!TryReloadJsonState(App.State, out string? stateErr) && stateErr is not null)
-                errors.Add(stateErr);
+            if (!TryReloadJsonState(App.State, out string? stateErr))
+            {
+                if (stateErr is not null)
+                    errors.Add(stateErr);
+            }
+            else if (App.PendingForceReinstall is bool pendingForceReinstall)
+            {
+                App.State.Prop.ForceReinstall = pendingForceReinstall;
+            }
 
-            if (errors.Count > 0)
+            if (errors.Count > 0 && showWarning)
             {
                 string warning = string.Format(
                     Strings.Menu_Vexstrap_InstallLocations_RefreshFailed,
                     string.Join("\n", errors));
                 Frontend.ShowMessageBox(warning, MessageBoxImage.Warning);
             }
+
+            return errors.Count == 0;
         }
 
         private void ViewInstallLocation(bool isStudio)
@@ -275,9 +298,9 @@ namespace Vexstrap.UI.ViewModels.Settings
                 }
             }
 
-            string bootstrapperMutex = $"Vexstrap-Bootstrapper-{mode}";
-            string updaterMutex = $"Vexstrap-BackgroundUpdater-{mode}";
-            if (Utilities.DoesMutexExist(bootstrapperMutex) || Utilities.DoesMutexExist(updaterMutex))
+            if (new[] { "Player", "Studio" }.Any(product =>
+                Utilities.DoesMutexExist($"Vexstrap-Bootstrapper-{product}") ||
+                Utilities.DoesMutexExist($"Vexstrap-BackgroundUpdater-{product}")))
             {
                 Frontend.ShowMessageBox(Strings.Menu_Vexstrap_InstallLocations_Blocked_UpdaterRunning, MessageBoxImage.Warning);
                 return;
@@ -289,10 +312,11 @@ namespace Vexstrap.UI.ViewModels.Settings
 
             try
             {
+                ReinstallGate.HoldMarker();
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = Paths.Process,
-                    Arguments = isStudio ? "-studio -nolaunch" : "-player -nolaunch",
+                    Arguments = isStudio ? "-studio -nolaunch -settingsreinstall" : "-player -nolaunch -settingsreinstall",
                     UseShellExecute = false
                 };
 
@@ -309,25 +333,15 @@ namespace Vexstrap.UI.ViewModels.Settings
                     var dispatcher = Application.Current?.Dispatcher;
                     if (dispatcher is null)
                     {
+                        ReinstallGate.ReleaseMarker();
                         ReinstallGate.Set(false);
                         return;
                     }
 
                     dispatcher.BeginInvoke(() =>
                     {
-                        try
-                        {
-                            RefreshStatesAfterReinstall();
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Failed to refresh states after {mode} reinstall");
-                            App.Logger.WriteException("VexstrapViewModel::LaunchReinstall", ex);
-                        }
-                        finally
-                        {
-                            ReinstallGate.Set(false);
-                        }
+                        ReinstallGate.ReleaseMarker();
+                        ReinstallGate.Set(false);
                     });
                 };
 
@@ -335,6 +349,7 @@ namespace Vexstrap.UI.ViewModels.Settings
                 {
                     App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Process.Start returned false for {mode}");
                     process.Dispose();
+                    ReinstallGate.ReleaseMarker();
                     ReinstallGate.Set(false);
                 }
             }
@@ -343,6 +358,7 @@ namespace Vexstrap.UI.ViewModels.Settings
                 App.Logger.WriteLine("VexstrapViewModel::LaunchReinstall", $"Failed to start reinstall process for {mode}");
                 App.Logger.WriteException("VexstrapViewModel::LaunchReinstall", ex);
                 process?.Dispose();
+                ReinstallGate.ReleaseMarker();
                 ReinstallGate.Set(false);
             }
         }

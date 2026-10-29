@@ -29,13 +29,13 @@
             <ui:ToggleSwitch IsChecked="{Binding BackgroundUpdates, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <controls:OptionControl 
+        <controls:OptionControl x:Name="ForceReinstallOption"
             Header="{x:Static resources:Strings.Menu_Behaviour_ForceRobloxReinstall_Title}"
             Description="{x:Static resources:Strings.Menu_Behaviour_ForceRobloxReinstall_Description}">
             <controls:OptionControl.Style>
                 <Style TargetType="controls:OptionControl">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsRobloxInstallationMissing, Mode=OneTime}" Value="True">
+                        <DataTrigger Binding="{Binding IsRobloxInstallationMissing, Mode=OneWay}" Value="True">
                             <Setter Property="IsEnabled" Value="False" />
                         </DataTrigger>
                     </Style.Triggers>

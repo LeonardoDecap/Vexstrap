@@ -140,9 +140,9 @@ namespace Vexstrap
             OriginalProp = new(Prop);
         }
 
-        public override bool Load(bool alertFailure = true)
+        public override bool Load(bool alertFailure = true, bool repairOnFailure = true)
         {
-            bool result = base.Load(alertFailure);
+            bool result = base.Load(alertFailure, repairOnFailure);
 
             // clone the dictionary
             OriginalProp = new(Prop);

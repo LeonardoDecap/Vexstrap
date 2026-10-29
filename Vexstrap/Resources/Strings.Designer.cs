@@ -3914,10 +3914,24 @@ namespace Vexstrap.Resources {
         /// <summary>
         ///   Looks up a localized string.
         /// </summary>
+        public static string Bootstrapper_OperationRunning {
+            get {
+                return ResourceManager.GetString("Bootstrapper_OperationRunning", resourceCulture);
+            }
+        }
+
         public static string Menu_Settings_ReinstallRunning {
             get {
                 return ResourceManager.GetString("Menu_Settings_ReinstallRunning", resourceCulture);
             }
+        }
+
+        public static string Menu_Settings_RefreshPending {
+            get { return ResourceManager.GetString("Menu_Settings_RefreshPending", resourceCulture); }
+        }
+
+        public static string Menu_Settings_RefreshClose {
+            get { return ResourceManager.GetString("Menu_Settings_RefreshClose", resourceCulture); }
         }
     }
 }

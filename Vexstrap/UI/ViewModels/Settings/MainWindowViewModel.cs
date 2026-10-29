@@ -48,9 +48,12 @@ namespace Vexstrap.UI.ViewModels.Settings
 
         private void SaveSettings()
         {
-            if (ReinstallGate.IsRunning)
+            using var stateLock = ReinstallOperationLock.TryStart(reinstall: false);
+            if (stateLock is null || ReinstallGate.IsRunning)
             {
-                Frontend.ShowMessageBox(Strings.Menu_Settings_ReinstallRunning, MessageBoxImage.Warning);
+                Frontend.ShowMessageBox(ReinstallGate.IsOperationRunning
+                    ? Strings.Menu_Settings_ReinstallRunning
+                    : Strings.Menu_Settings_RefreshPending, MessageBoxImage.Warning);
                 return;
             }
 
@@ -58,6 +61,8 @@ namespace Vexstrap.UI.ViewModels.Settings
 
             App.Settings.Save();
             App.State.Save();
+            if (App.State.LastSaveSucceeded)
+                App.PendingForceReinstall = null;
             App.FastFlags.Save();
 
             foreach (var pair in App.PendingSettingTasks)

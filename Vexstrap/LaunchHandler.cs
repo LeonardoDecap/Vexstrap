@@ -10,6 +10,43 @@ namespace Vexstrap
 {
     public static class LaunchHandler
     {
+        // Held for the lifetime of a bootstrapper or background updater process.
+        private static FileStream? _robloxOperationLock;
+
+        internal static bool TryStartRobloxOperation()
+        {
+            if (_robloxOperationLock is not null)
+                return true;
+
+            bool reinstall = App.LaunchSettings.SettingsReinstallFlag.Active;
+            _robloxOperationLock = ReinstallOperationLock.TryStart(reinstall);
+            return _robloxOperationLock is not null;
+        }
+
+        internal static bool TryStartExclusiveOperation()
+        {
+            if (ReinstallGate.IsRunning)
+                return false;
+            _robloxOperationLock = ReinstallOperationLock.TryAcquire(exclusive: true);
+            if (_robloxOperationLock is null)
+                return false;
+            if (ReinstallGate.IsRunning)
+            {
+                _robloxOperationLock.Dispose();
+                _robloxOperationLock = null;
+                return false;
+            }
+            return true;
+        }
+
+        internal static void ReportBlockedRobloxOperation()
+        {
+            if (!App.LaunchSettings.QuietFlag.Active && !App.LaunchSettings.BackgroundUpdaterFlag.Active)
+                Frontend.ShowMessageBox(ReinstallGate.IsRunning && !App.LaunchSettings.SettingsReinstallFlag.Active
+                    ? Strings.Menu_Settings_ReinstallRunning
+                    : Strings.Bootstrapper_OperationRunning, MessageBoxImage.Warning);
+            App.Terminate(ErrorCode.ERROR_INSTALL_USEREXIT);
+        }
         public static void ProcessNextAction(NextAction action, bool isUnfinishedInstall = false)
         {
             const string LOG_IDENT = "LaunchHandler::ProcessNextAction";
@@ -132,6 +169,12 @@ namespace Vexstrap
 
         public static void LaunchUninstaller()
         {
+            if (!TryStartExclusiveOperation())
+            {
+                ReportBlockedRobloxOperation();
+                return;
+            }
+
             using var interlock = new InterProcessLock("Uninstaller");
 
             if (!interlock.IsAcquired)
@@ -212,6 +255,36 @@ namespace Vexstrap
 
             if (launchMode == LaunchMode.None)
                 throw new InvalidOperationException("No Roblox launch mode set");
+
+            if (!TryStartRobloxOperation())
+            {
+                ReportBlockedRobloxOperation();
+                return;
+            }
+
+            // The launching Settings process can disappear before this child starts.
+            // Recheck after taking the exclusive lock so it cannot race a new launch.
+            if (App.LaunchSettings.SettingsReinstallFlag.Active)
+            {
+                bool robloxRunning = Cleaner.RobloxProcessNames.Any(name =>
+                {
+                    Process[] processes = Process.GetProcessesByName(name);
+                    bool found = processes.Length != 0;
+                    foreach (Process process in processes)
+                        process.Dispose();
+                    return found;
+                });
+                bool updaterRunning = Utilities.DoesMutexExist("Vexstrap-BackgroundUpdater-Player") ||
+                                      Utilities.DoesMutexExist("Vexstrap-BackgroundUpdater-Studio");
+                if (robloxRunning || updaterRunning)
+                {
+                    Frontend.ShowMessageBox(robloxRunning
+                        ? Strings.Menu_Vexstrap_InstallLocations_Blocked_RobloxRunning
+                        : Strings.Menu_Vexstrap_InstallLocations_Blocked_UpdaterRunning, MessageBoxImage.Warning);
+                    App.Terminate(ErrorCode.ERROR_INSTALL_USEREXIT);
+                    return;
+                }
+            }
 
             if (!File.Exists(Path.Combine(Paths.System, "mfplat.dll")))
             {
@@ -315,6 +388,13 @@ namespace Vexstrap
 
             if (launchMode != LaunchMode.Player && launchMode != LaunchMode.Studio)
                 throw new ApplicationException($"Unsupported launch mode {launchMode} provided");
+
+            if (!TryStartRobloxOperation())
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Another updater or Settings reinstall is running; skipping background update.");
+                App.Terminate();
+                return;
+            }
 
             App.Logger.WriteLine(LOG_IDENT, "Initializing bootstrapper");
             App.Bootstrapper = new Bootstrapper(launchMode)

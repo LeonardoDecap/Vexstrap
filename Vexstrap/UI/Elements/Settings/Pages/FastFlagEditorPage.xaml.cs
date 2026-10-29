@@ -313,7 +313,7 @@ namespace Vexstrap.UI.Elements.Settings.Pages
         }
 
         // refresh list on page load to synchronize with preset page
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (!App.Settings.Prop.FastFlagWarningAcknowledged)
             {

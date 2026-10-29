@@ -19,7 +19,12 @@ namespace Vexstrap.UI.ViewModels.Settings
         public bool ForceRobloxReinstallation
         {
             get => App.State.Prop.ForceReinstall || IsRobloxInstallationMissing;
-            set => App.State.Prop.ForceReinstall = value;
+            set
+            {
+                if (App.State.Prop.ForceReinstall != value)
+                    App.PendingForceReinstall = value;
+                App.State.Prop.ForceReinstall = value;
+            }
         }
     }
 }
